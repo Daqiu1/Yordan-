@@ -1,0 +1,3554 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赢单 v1.32 护眼版 · 快捷键版</title>
+<link href="https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.bundle.min.js">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #3498DB;
+  --primary-light: #5DADE2;
+  --primary-dark: #2980B9;
+  --accent: #3498DB;
+  --accent-light: #AED6F1;
+  --bg: #F8F9FA;
+  --bg-secondary: #ECF0F1;
+  --card-bg: #FFFFFF;
+  --panel-bg: rgba(255,255,255,0.95);
+  --text: #2C3E50;
+  --text-secondary: #7F8C8D;
+  --text-light: #95A5A6;
+  --border: #E8EAED;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+  --sidebar-width: 200px;
+  --topbar-h: 52px;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --green: #27AE60;
+  --orange: #E67E22;
+  --red: #E74C3C;
+  --blue: #3498DB;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; line-height: 1.6; font-size: 14px; }
+
+/* ── Sidebar ── */
+.sidebar { width: var(--sidebar-width); background: var(--primary); color: #fff; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+.sidebar-header { padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.sidebar-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.sidebar-header p { font-size: 11px; opacity: 0.6; }
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.nav-item { padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 8px; }
+.nav-item:hover { background: rgba(255,255,255,0.08); }
+.nav-item.active { background: rgba(212,175,55,0.18); border-left-color: var(--accent); color: var(--accent); }
+.sidebar-footer { padding: 12px 16px; font-size: 10px; opacity: 0.4; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Main ── */
+.main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { height: var(--topbar-h); background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.topbar-actions { display: flex; gap: 8px; }
+.content { flex: 1; padding: 20px 24px; }
+
+/* ── Modules ── */
+.module { display: none; }
+.module.active { display: block; }
+
+/* ── Card ── */
+.card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--primary); }
+
+/* ── Grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── Form ── */
+.form-group { margin-bottom: 12px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+.form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; transition: border-color 0.2s; }
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,35,126,0.08); }
+select.form-control { cursor: pointer; }
+textarea.form-control { resize: vertical; }
+
+/* ── Buttons ── */
+.btn { display: inline-flex; align-items: center; gap: 4px; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 500; transition: all 0.2s; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-light); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: #c49a2d; }
+.btn-outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.btn-outline:hover { background: rgba(26,35,126,0.06); }
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: #f0f0f0; color: var(--text); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* ── Plan Generator ── */
+.plan-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.result-box { background: var(--primary); color: #fff; border-radius: var(--radius); padding: 20px; min-height: 300px; }
+.result-box h3 { font-size: 15px; margin-bottom: 16px; opacity: 0.9; }
+.plan-item { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; margin-bottom: 12px; border-left: 3px solid var(--accent); }
+.plan-item-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--accent); }
+.plan-item-detail { font-size: 12px; line-height: 1.8; color: rgba(255,255,255,0.85); }
+.plan-summary { background: rgba(255,255,255,0.1); border-radius: 6px; padding: 12px; font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.8; margin-top: 8px; }
+.coverage-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.coverage-tag { padding: 3px 10px; border-radius: 20px; font-size: 11px; background: rgba(212,175,55,0.2); color: var(--accent-light); border: 1px solid rgba(212,175,55,0.3); }
+
+/* ── Scripts ── */
+.tabs { display: flex; gap: 2px; background: #f0f0f0; border-radius: 8px; padding: 3px; margin-bottom: 16px; width: fit-content; }
+.tab-btn { padding: 7px 18px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: all 0.2s; }
+.tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.script-category { margin-bottom: 20px; }
+.script-category-title { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+.script-card { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; transition: box-shadow 0.2s; }
+.script-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.script-text { font-size: 13px; line-height: 1.8; color: var(--text); margin-bottom: 10px; white-space: pre-wrap; word-break: break-word; }
+.script-actions { display: flex; gap: 6px; }
+
+/* ── Customer Stats ── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; text-align: center; }
+.stat-card .label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+.stat-card .value { font-size: 28px; font-weight: 700; color: var(--primary); }
+.stat-card .sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ── Search ── */
+.search-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-input-wrap { flex: 1; min-width: 160px; position: relative; }
+.search-input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; }
+.search-input:focus { outline: none; border-color: var(--primary); }
+.filter-select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; background: #fff; cursor: pointer; }
+
+/* ── Table ── */
+.table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8f9fa; }
+.actions-cell { display: flex; gap: 4px; }
+.text-center { text-align: center; }
+
+/* ── Badges ── */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-blue { background: #e3f2fd; color: var(--blue); }
+.badge-green { background: #e8f5e9; color: var(--green); }
+.badge-orange { background: #fff3e0; color: var(--orange); }
+.badge-gray { background: #f5f5f5; color: var(--text-secondary); }
+.badge-red { background: #ffebee; color: var(--red); }
+
+/* ── Table Type Grid ── */
+.table-type-grid { display: flex; gap: 12px; overflow-x: auto; padding: 8px 0; scroll-snap-type: x mandatory; }
+.table-type-card { flex: 0 0 auto; min-width: 140px; cursor: pointer; padding: 16px 20px; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; transition: all 0.2s; border: 2px solid transparent; scroll-snap-align: start; }
+.table-type-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.table-type-icon { font-size: 32px; margin-bottom: 8px; }
+.table-type-name { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 4px; }
+.table-type-desc { font-size: 11px; color: var(--text-secondary); }
+
+/* ── Modal ── */
+.modal-overlay { display: none; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; }
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; border-radius: var(--radius); width: 560px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.modal-header h3 { font-size: 15px; font-weight: 600; color: var(--primary); }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-secondary); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; }
+.modal-close:hover { background: #f0f0f0; }
+.modal-body { padding: 20px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--border); }
+
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); padding: 10px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s ease; min-width: 200px; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.warning { border-left: 3px solid var(--orange); }
+.toast.info { border-left: 3px solid var(--blue); }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+.empty-state .icon { font-size: 36px; margin-bottom: 10px; opacity: 0.5; }
+.empty-state p { font-size: 13px; }
+
+/* ── Follow up ── */
+.follow-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.follow-date { color: var(--text-secondary); font-size: 12px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar-header h1 { font-size: 14px; }
+  .sidebar-header p, .sidebar-footer, .nav-item span.txt { display: none; }
+  .main { margin-left: 60px; }
+  .plan-layout { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ══ Dashboard ══ */
+.dashboard-hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+.dashboard-hero h2 { font-size: 20px; margin-bottom: 6px; }
+.dashboard-hero p { opacity: 0.85; font-size: 13px; }
+.greeting-time { font-size: 12px; opacity: 0.7; margin-top: 10px; }
+.dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: #fff; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); text-align: center; }
+.stat-card .num { font-size: 28px; font-weight: 700; color: var(--primary); }
+.stat-card .label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.pipeline-section { margin-bottom: 20px; }
+.pipeline-section .card { background: #fff; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+#pipeline-chart { height: 120px; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding-top: 20px; }
+.pipeline-bar { width: 40px; background: var(--accent); border-radius: 4px 4px 0 0; position: relative; transition: height 0.3s; }
+.pipeline-bar::after { content: attr(data-count); position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; color: var(--primary); }
+.pipeline-label { font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 4px; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel-card { background: #fff; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.panel-card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
+.quick-links { display: flex; flex-direction: column; gap: 8px; }
+.qa-btn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #f5f5f5; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.2s; }
+.qa-btn:hover { background: #eee; border-color: var(--primary-light); }
+.qa-btn .icon { font-size: 16px; }
+
+/* ══ Task Cards ══ */
+.task-card { 
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7)); 
+  border-radius: 8px; 
+  padding: 12px; 
+  margin-bottom: 10px; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  border-left: 3px solid var(--primary);
+  position: relative;
+}
+.task-card:hover { transform: translateX(3px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.task-card.pinned { border-left-color: var(--accent); background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(255,255,255,0.85)); }
+.task-card.urgent { border-left-color: var(--red); }
+.task-card.completed { opacity: 0.5; text-decoration: line-through; }
+.task-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.task-card-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+.task-card-pin { font-size: 12px; }
+.task-card-countdown { font-size: 18px; font-weight: 700; color: var(--primary); }
+.task-card-countdown.urgent { color: var(--red); }
+.task-card-countdown.warning { color: var(--orange); }
+.task-card-countdown.soon { color: var(--green); }
+.task-card-deadline { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.task-empty { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px; }
+
+.overdue-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.overdue-item:last-child { border-bottom: none; }
+.overdue-name { font-weight: 500; }
+.overdue-date { color: var(--orange); font-size: 11px; }
+
+
+/* ══ Settings ══ */
+.settings-section { margin-bottom: 20px; }
+.settings-section h4 { font-size: 13px; color: var(--primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.setting-row label { font-size: 13px; color: var(--text); }
+.bg-options { display: flex; gap: 8px; }
+.bg-opt { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+.bg-opt.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,35,126,0.2); }
+#task-list { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+#task-list::-webkit-scrollbar { width: 4px; }
+#task-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ═══ 深色模式 ═══ */
+body.dark-mode {
+  --bg: #121212;
+  --card-bg: #1e1e1e;
+  --panel-bg: rgba(30,30,30,0.92);
+  --text: #e0e0e0;
+  --text-secondary: #9e9e9e;
+  --border: #333333;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --primary: #90caf9;
+  --primary-light: #bbdefb;
+  --accent: #ffd54f;
+  --accent-light: #fff9c4;
+  --green: #66bb6a;
+  --orange: #ffa726;
+  --red: #ef5350;
+  --blue: #42a5f5;
+  background: #121212;
+  color: #e0e0e0;
+}
+body.dark-mode .sidebar {
+  background: #1a1a2e;
+  border-right-color: #333;
+}
+body.dark-mode .sidebar .nav-item {
+  color: #b0b0b0;
+}
+body.dark-mode .sidebar .nav-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+}
+body.dark-mode .sidebar .nav-item.active {
+  background: rgba(144,202,249,0.15);
+  color: #90caf9;
+}
+body.dark-mode .topbar {
+  background: #1e1e1e;
+  border-bottom-color: #333;
+  color: #e0e0e0;
+}
+body.dark-mode .card {
+  background: #1e1e1e;
+  border-color: #333;
+}
+body.dark-mode .modal {
+  background: #252525;
+  color: #e0e0e0;
+}
+body.dark-mode .modal-overlay {
+  background: rgba(0,0,0,0.7);
+}
+body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+}
+body.dark-mode .btn-primary {
+  background: #1565c0;
+}
+body.dark-mode .btn-ghost {
+  color: #b0b0b0;
+}
+body.dark-mode .btn-ghost:hover {
+  background: rgba(255,255,255,0.08);
+}
+body.dark-mode .table th {
+  background: #252525;
+  color: #b0b0b0;
+}
+body.dark-mode .table td {
+  border-color: #333;
+}
+body.dark-mode .table tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+body.dark-mode .stat-card {
+  background: #1e1e1e;
+}
+body.dark-mode .tabs .tab-btn {
+  color: #9e9e9e;
+}
+body.dark-mode .tabs .tab-btn.active {
+  color: #90caf9;
+  border-color: #90caf9;
+}
+body.dark-mode .pipeline-bar {
+  background: #42a5f5;
+}
+body.dark-mode .script-card {
+  background: #252525;
+  border-color: #333;
+}
+body.dark-mode .copy-card {
+  background: #252525;
+  border-color: #333;
+}
+body.dark-mode .table-type-card {
+  background: #252525;
+  border-color: #333;
+}
+body.dark-mode .table-type-card:hover {
+  background: #2a2a2a;
+  border-color: #90caf9;
+}
+body.dark-mode .toast {
+  color: #e0e0e0;
+}
+body.dark-mode .badge-red { background: #4a1a1a; color: #ef9a9a; }
+body.dark-mode .badge-orange { background: #4a2a0a; color: #ffcc80; }
+body.dark-mode .badge-green { background: #1a3a1a; color: #a5d6a7; }
+body.dark-mode .badge-gray { background: #333; color: #9e9e9e; }
+body.dark-mode .task-card {
+  background: #252525;
+  border-color: #333;
+}
+body.dark-mode .task-card:hover {
+  background: #2a2a2a;
+}
+body.dark-mode .task-empty {
+  color: #666;
+}
+body.dark-mode .bg-opt.active { border-color: #90caf9; box-shadow: 0 0 0 2px rgba(144,202,249,0.3); }
+
+
+/* AI 助手模块 */
+.ai-chat-container { display: flex; flex-direction: column; height: 400px; }
+.ai-messages { flex: 1; overflow-y: auto; padding: 12px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px; }
+.ai-message { margin-bottom: 12px; }
+.ai-user { text-align: right; }
+.ai-user .ai-message-content { background: var(--accent-blue); color: #fff; display: inline-block; padding: 8px 14px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; }
+.ai-assistant .ai-message-content { background: var(--bg-tertiary); display: inline-block; padding: 10px 14px; border-radius: 16px 16px 16px 4px; max-width: 85%; white-space: pre-wrap; }
+.ai-thinking { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); }
+.ai-coin { font-size: 20px; animation: coinSpin 1s linear infinite; }
+@keyframes coinSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+.ai-input-area { display: flex; gap: 10px; }
+.ai-input-area input { flex: 1; }
+.ai-quick-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-quick-actions .btn { flex: 1; min-width: 120px; text-align: center; }
+.product-tag { transition: all 0.15s; }
+.product-tag:hover { opacity: 0.85; }
+.product-tag button:hover { transform: scale(1.2); }
+
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar Navigation ── -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>🚀 赢单 v1.3</h1>
+    <p>销售展业工具箱</p>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-item active" data-module="module-dashboard">📊 数据看板</div>
+    <div class="nav-item" data-module="module-plan">📋 方案生成</div>
+    <div class="nav-item" data-module="module-scripts">💬 话术文案</div>
+    <div class="nav-item" data-module="module-customers">👥 客户管理</div>
+    <div class="nav-item" data-module="module-tables">📊 表格登记</div>
+    <div class="nav-item" data-module="module-ai">🤖 AI 助手</div>
+  </div>
+  <div class="sidebar-footer">
+    <p>本地数据存储 · v1.32 护眼 快捷键</p>
+    <button onclick="openSettingsModal()" style="width:100%;padding:7px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;margin-top:6px;transition:background 0.2s;">⚙️ 设置</button>
+  </div>
+</nav>
+
+<!-- ── Main Content ── -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">📋 方案生成</div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="exportData()">💾 导出数据</button>
+      <button class="btn btn-ghost btn-sm" onclick="importData()">📂 导入</button>
+    </div>
+  </header>
+  <div class="content">
+
+
+    <!-- ══ Module 0: 数据看板 Dashboard ══ -->
+    <div id="module-dashboard" class="module">
+      <div class="dashboard-hero">
+        <h2 id="dash-greeting">下午好，欢迎回来 👋</h2>
+        <p>这里是您的销售数据中心，随时掌握业务动态</p>
+        <div class="greeting-time" id="dash-time"></div>
+      </div>
+      <div class="dashboard-stats" id="dash-stats"></div>
+      <div class="customer-curve-section" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <span>📈 客户变化曲线</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="date" id="curve-start-date" onchange="renderCustomerCurve()" class="form-control" style="width:130px;font-size:12px;padding:4px 8px;">
+              <span style="color:var(--text-secondary);">至</span>
+              <input type="date" id="curve-end-date" onchange="renderCustomerCurve()" class="form-control" style="width:130px;font-size:12px;padding:4px 8px;">
+            </div>
+          </div>
+          <div id="customer-curve-chart" style="height:180px;position:relative;margin-top:10px;">
+            <canvas id="curve-canvas" style="width:100%;height:100%;"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="panel-card">
+          <div class="panel-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>⏰ 待办任务</span>
+            <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;" onclick="openTaskModal()">+ 新增</button>
+          </div>
+          <div id="task-list"></div>
+        </div>
+        <div class="panel-card">
+          <div class="panel-card-title">⚡ 快捷入口</div>
+          <div class="quick-links">
+            <button class="qa-btn" onclick="switchModule('module-plan')"><span class="icon">📋</span>方案生成</button>
+            <button class="qa-btn" onclick="switchModule('module-customers')"><span class="icon">👥</span>客户名单</button>
+            <button class="qa-btn" onclick="switchModule('module-tables')"><span class="icon">📊</span>表格登记</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Module 1: 方案生成 ══ -->
+    <div id="module-plan" class="module active">
+      <div class="card">
+        <div class="card-title">客户画像输入</div>
+        <div class="plan-layout">
+          <div>
+            <div class="form-group">
+              <label class="form-label">关联客户（可选）</label>
+              <select id="plan-customer" class="form-control" onchange="fillCustomerInfo()">
+                <option value="">-- 从客户名单选择 --</option>
+              </select>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">姓名</label>
+                <input type="text" id="plan-name" class="form-control" placeholder="客户姓名">
+              </div>
+              <div class="form-group">
+                <label class="form-label">年龄</label>
+                <input type="number" id="plan-age" class="form-control" placeholder="如：35" min="18" max="70">
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">职业</label>
+                <select id="plan-job" class="form-control">
+                  <option value="">请选择</option>
+                  <option value="企业主">企业主</option>
+                  <option value="企业高管">企业高管</option>
+                  <option value="白领/职员">白领/职员</option>
+                  <option value="自由职业">自由职业</option>
+                  <option value="公务人员">公务人员</option>
+                  <option value="个体工商户">个体工商户</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">年收入（万元）</label>
+                <input type="number" id="plan-income" class="form-control" placeholder="如：30" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">关注产品</label>
+              <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openProductSelectModal()">📦 从产品管理选择</button>
+              </div>
+              <div id="plan-products-selected" style="display:flex;flex-wrap:wrap;gap:6px;min-height:36px;padding:10px;background:var(--bg-secondary);border:1px dashed var(--border-color);border-radius:6px;">
+                <span style="color:var(--text-secondary);font-size:13px;">暂无关注产品</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">需求/痛点简述</label>
+              <textarea id="plan-gap" class="form-control" rows="2" placeholder="描述客户目前的保障缺口..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="generatePlanWithAI()" style="width:100%;">🤖 AI智能生成方案</button>
+          </div>
+          <div class="result-box">
+            <h3>💡 推荐方案</h3>
+            <div id="plan-output">
+              <div class="empty-state" style="color:rgba(255,255,255,0.6);">
+                <div class="icon" style="font-size:36px;opacity:0.4;margin-bottom:10px;">📝</div>
+                <p style="font-size:13px;">填写客户信息<br>点击"AI智能生成方案"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Module 2: 话术文案 ══ -->
+    <div id="module-scripts" class="module">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this, 'tab-script-library')">话术库</button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-copy-library')">朋友圈文案</button>
+      </div>
+      <div id="tab-script-library" class="tab-content active">
+        <div style="margin-bottom:14px;">
+          <button class="btn btn-primary btn-sm" onclick="openScriptModal()">➕ 新增话术</button>
+        </div>
+        <div id="script-list-container"></div>
+      </div>
+      <div id="tab-copy-library" class="tab-content">
+        <div style="margin-bottom:14px;display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="openCopyModal()">➕ 新增文案</button>
+          <button class="btn btn-accent btn-sm copy-ai-btn" onclick="generateCopyWithAI()">🤖 AI生成文案</button>
+        </div>
+        <div id="copy-list-container"></div>
+      </div>
+    </div>
+
+    <!-- ══ Module 3: 客户管理 ══ -->
+    <div id="module-customers" class="module">
+      <div class="stats-row" id="customer-stats"></div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div class="card-title" style="margin-bottom:0;">客户列表</div>
+          <button class="btn btn-accent btn-sm" onclick="openCustomerModal()">➕ 新增客户</button>
+        </div>
+        <div class="search-bar">
+          <div class="search-input-wrap">
+            <input type="text" class="search-input" id="customer-search" placeholder="搜索客户姓名/职业..." oninput="filterCustomers()">
+          </div>
+          <select class="filter-select" id="filter-status" onchange="filterCustomers()">
+            <option value="">全部状态</option>
+            <option value="跟进中">跟进中</option>
+            <option value="高意向">高意向</option>
+            <option value="已签单">已签单</option>
+            <option value="已放弃">已放弃</option>
+          </select>
+          <select class="filter-select" id="filter-priority" onchange="filterCustomers()">
+            <option value="">全部优先级</option>
+            <option value="高">高</option>
+            <option value="中">中</option>
+            <option value="低">低</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>姓名</th><th>年龄</th><th>职业</th><th>年收入</th>
+                <th>状态</th><th>优先级</th><th>最近跟进</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="customer-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Module 4: 表格登记 ══ -->
+    <div id="module-tables" class="module">
+      <div class="card">
+        <div class="card-title">选择表格类型</div>
+        <div class="table-type-grid" id="table-type-grid"></div>
+      </div>
+      <div id="table-detail-section" style="display:none;">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <div class="card-title" style="margin-bottom:0;" id="table-detail-title">表格详情</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="search-input-wrap" style="min-width:140px;">
+                <input type="text" class="search-input" id="table-search" placeholder="搜索记录..." oninput="filterTableRecords()">
+              </div>
+              <button class="btn btn-accent btn-sm" onclick="openTableRecordModal()">➕ 新增记录</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportTableExcel()" title="导出Excel">📊 导出</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('excel-import-input').click()" title="导入Excel">📥 导入</button>
+              <button class="btn btn-ghost btn-sm" onclick="deleteAllTableRecords()" style="color:#ef5350;">🗑️ 全部删除</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('table-detail-section').style.display='none'">← 返回</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead id="table-records-thead"></thead>
+              <tbody id="table-records-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══ AI 助手模块 ══ -->
+    <div id="module-ai" class="module">
+      <div class="card">
+        <div class="card-title">🤖 AI 智能助手</div>
+        <div class="ai-chat-container" id="ai-chat-container">
+          <div class="ai-messages" id="ai-messages"></div>
+          <div class="ai-input-area">
+            <input type="text" id="ai-input" class="form-control" placeholder="输入你的问题或需求..." onkeydown="aiInputKeydown(event)">
+            <button class="btn btn-accent" onclick="sendAIMessage()">发送</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">快捷指令</div>
+        <div class="ai-quick-actions">
+          <button class="btn btn-ghost" onclick="quickAI('生成今日工作计划')">📋 生成计划</button>
+          <button class="btn btn-ghost" onclick="quickAI('分析我的客户数据')">📊 分析客户</button>
+          <button class="btn btn-ghost" onclick="quickAI('推荐适合的保险产品')">💡 产品推荐</button>
+          <button class="btn btn-ghost" onclick="quickAI('写一段跟进话术')">💬 写话术</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+
+<!-- ══ Modal: 设置 ══ -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>⚙️ 设置</h3>
+      <button class="modal-close" onclick="closeModal('modal-settings')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-section">
+        <h4>🎯 从事领域</h4>
+        <div class="setting-row">
+          <select id="settings-industry" class="form-control" onchange="changeIndustry(this.value)">
+            <option value="金融保险">金融保险</option>
+            <option value="房产经纪">房产经纪</option>
+            <option value="教育培训">教育培训</option>
+            <option value="软件SaaS">软件SaaS</option>
+            <option value="医疗器械">医疗器械</option>
+            <option value="汽车销售">汽车销售</option>
+            <option value="电商零售">电商零售</option>
+            <option value="咨询服务">咨询服务</option>
+            <option value="工厂销售">工厂销售</option>
+          </select>
+          <p style="font-size:11px;color:var(--text-secondary);margin-top:6px;">切换后，方案/话术/文案将自动更新为该行业内容</p>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4>🎨 外观</h4>
+        <div class="setting-row">
+          <label>背景色</label>
+          <div class="bg-options" id="bg-options"></div>
+        </div>
+        <div class="setting-row">
+          <label>深色模式</label>
+          <button class="btn btn-sm" id="darkmode-toggle" onclick="toggleDarkMode()">🌙 开启</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4>👤 个人信息</h4>
+        <div class="form-group">
+          <label class="form-label">显示名称</label>
+          <input type="text" id="setting-name" class="form-control" placeholder="您的称呼">
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">个性签名</label>
+          <input type="text" id="setting-signature" class="form-control" placeholder="一句话介绍自己">
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4>🤖 AI回答风格</h4>
+        <div class="form-group">
+          <label class="form-label">沟通风格</label>
+          <select id="setting-ai-style" class="form-control">
+            <option value="专业严谨">专业严谨（适合高净值客户）</option>
+            <option value="亲切温暖">亲切温暖（适合普通客户）</option>
+            <option value="简洁高效">简洁高效（适合快节奏沟通）</option>
+            <option value="幽默风趣">幽默风趣（适合轻松氛围）</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">附加提示（可选）</label>
+          <textarea id="setting-ai-extra" class="form-control" rows="2" placeholder="补充你希望AI遵循的特殊要求，如：多使用类比、避免专业术语..."></textarea>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4>💾 数据备份</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="exportData()">📤 导出备份</button>
+          <button class="btn btn-ghost btn-sm" onclick="importData()">📥 导入还原</button>
+        </div>
+        <p style="font-size:11px;color:var(--text-secondary);margin-top:8px;">导出包含客户、话术、文案、表格、任务等全部数据</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-settings')">取消</button>
+      <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 任务管理 ══ -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 id="task-modal-title">新增任务</h3>
+      <button class="modal-close" onclick="closeModal('modal-task')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">任务标题 *</label>
+        <input type="text" id="task-title" class="form-control" placeholder="如：完成客户张三的方案">
+      </div>
+      <div class="form-group">
+        <label class="form-label">截止时间 *</label>
+        <input type="datetime-local" id="task-deadline" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">任务详情</label>
+        <textarea id="task-detail" class="form-control" rows="3" placeholder="详细描述（可选）"></textarea>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="task-pinned">
+        <label for="task-pinned" style="font-size:13px;">📌 置顶显示</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-task')">取消</button>
+      <button class="btn btn-primary" id="task-save-btn" onclick="saveTask()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 任务详情 ══ -->
+<div class="modal-overlay" id="modal-task-detail">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 id="task-detail-title">任务详情</h3>
+      <button class="modal-close" onclick="closeModal('modal-task-detail')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="task-detail-content"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-task-detail')">关闭</button>
+      <button class="btn btn-outline" id="task-detail-edit-btn">编辑</button>
+      <button class="btn btn-primary" id="task-detail-complete-btn">✓ 完成任务</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Toast ══ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══ Modal: 话术/文案 ══ -->
+<div class="modal-overlay" id="modal-script">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="script-modal-title">新增话术</h3>
+      <button class="modal-close" onclick="closeModal('modal-script')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">场景分类</label>
+        <select id="script-modal-category" class="form-control">
+          <option value="首次接触">首次接触</option>
+          <option value="需求激发">需求激发</option>
+          <option value="方案呈现">方案呈现</option>
+          <option value="促成签单">促成签单</option>
+          <option value="异议处理">异议处理</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">内容</label>
+        <textarea id="script-modal-content" class="form-control" rows="5" placeholder="输入话术内容，或点击下方「🤖 AI生成」智能生成"></textarea>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="generateScriptWithAI()" style="margin-top:4px;" id="ai-generate-script-btn">🤖 AI生成</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-script')">取消</button>
+      <button class="btn btn-primary" onclick="saveScript()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 客户新增/编辑 ══ -->
+<div class="modal-overlay" id="modal-customer">
+  <div class="modal" style="width:580px;">
+    <div class="modal-header">
+      <h3 id="customer-modal-title">新增客户</h3>
+      <button class="modal-close" onclick="closeModal('modal-customer')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="customer-edit-id">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">姓名 *</label>
+          <input type="text" id="cust-name" class="form-control" placeholder="客户姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">年龄</label>
+          <input type="number" id="cust-age" class="form-control" placeholder="如：35" min="18" max="70">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">职业</label>
+          <select id="cust-job" class="form-control">
+            <option value="">请选择</option>
+            <option value="企业主">企业主</option>
+            <option value="企业高管">企业高管</option>
+            <option value="白领/职员">白领/职员</option>
+            <option value="自由职业">自由职业</option>
+            <option value="公务人员">公务人员</option>
+            <option value="个体工商户">个体工商户</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">年收入（万元）</label>
+          <input type="number" id="cust-income" class="form-control" placeholder="如：30" min="0">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">状态</label>
+          <select id="cust-status" class="form-control">
+            <option value="跟进中">跟进中</option>
+            <option value="高意向">高意向</option>
+            <option value="已签单">已签单</option>
+            <option value="已放弃">已放弃</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">优先级</label>
+          <select id="cust-priority" class="form-control">
+            <option value="高">高</option>
+            <option value="中" selected>中</option>
+            <option value="低">低</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <textarea id="cust-note" class="form-control" rows="2" placeholder="客户备注信息..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-customer')">取消</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 客户详情+跟进记录 ══ -->
+<div class="modal-overlay" id="modal-customer-detail">
+  <div class="modal" style="width:640px;">
+    <div class="modal-header">
+      <h3 id="customer-detail-name">客户详情</h3>
+      <button class="modal-close" onclick="closeModal('modal-customer-detail')">×</button>
+    </div>
+    <div class="modal-body" id="customer-detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-customer-detail')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 表格记录新增/编辑 ══ -->
+<div class="modal-overlay" id="modal-table-record">
+
+<!-- ══ Modal: AI 设置 ══ -->
+<div class="modal-overlay" id="modal-ai-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>AI 设置</h3>
+      <button class="modal-close" onclick="closeModal('modal-ai-settings')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>API 端点</label>
+        <input type="text" id="ai-api-url" class="form-control" value="https://ark.cn-beijing.volces.com/api/v3/chat/completions">
+      </div>
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" id="ai-api-key" class="form-control" value="40a4eb50-4144-449c-8a0d-27590b19f089">
+      </div>
+      <div class="form-group">
+        <label>推理接入点 ID</label>
+        <input type="text" id="ai-model" class="form-control" value="ep-20260415205954-ffj9g">
+      </div>
+      <div class="form-group">
+        <label>AI回答风格</label>
+        <select id="setting-ai-style" class="form-control">
+          <option value="专业严谨">专业严谨（适合高净值客户）</option>
+          <option value="亲切温暖">亲切温暖（适合普通客户）</option>
+          <option value="简洁高效">简洁高效（适合快节奏沟通）</option>
+          <option value="幽默风趣">幽默风趣（适合轻松氛围）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>附加提示（可选）</label>
+        <textarea id="setting-ai-extra" class="form-control" rows="2" placeholder="补充你希望AI遵循的特殊要求..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>系统提示词</label>
+        <textarea id="ai-system-prompt" class="form-control" rows="3" placeholder="你是一位专业的保险顾问..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-ai-settings')">取消</button>
+      <button class="btn btn-accent" onclick="saveAISettings()">保存设置</button>
+    </div>
+  </div>
+</div>
+
+  <div class="modal" style="width:560px;">
+    <div class="modal-header">
+      <h3 id="table-record-modal-title">新增记录</h3>
+      <button class="modal-close" onclick="closeModal('modal-table-record')">×</button>
+    </div>
+    <div class="modal-body" id="table-record-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-table-record')">取消</button>
+      <button class="btn btn-primary" onclick="saveTableRecord()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden import input -->
+<input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImport(event)">
+<input type="file" id="excel-import-input" accept=".xlsx,.xls" style="display:none" onchange="handleExcelImport(event)">
+
+<!-- ══ Modal: 快捷添加产品 ══ -->
+<div class="modal-overlay" id="modal-quick-product">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>新增产品</h3>
+      <button class="modal-close" onclick="closeModal('modal-quick-product')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">产品名称</label>
+        <input type="text" id="quick-product-name" class="form-control" placeholder="如：重疾险A款">
+      </div>
+      <div class="form-group">
+        <label class="form-label">规格（可选）</label>
+        <input type="text" id="quick-product-spec" class="form-control" placeholder="如：保额50万">
+      </div>
+      <div class="form-group">
+        <label class="form-label">数量</label>
+        <input type="number" id="quick-product-qty" class="form-control" value="1" min="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">单价（元）</label>
+        <input type="number" id="quick-product-price" class="form-control" placeholder="如：5000">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-quick-product')">取消</button>
+      <button class="btn btn-accent" onclick="saveQuickProduct()">保存并添加到关注</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: 产品选择 ══ -->
+<div class="modal-overlay" id="modal-product-select">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3>📦 选择关注产品</h3>
+      <button class="modal-close" onclick="closeModal('modal-product-select')">×</button>
+    </div>
+    <div class="modal-body" style="max-height:400px;overflow-y:auto;padding:8px 0;">
+      <div id="product-select-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-product-select')">取消</button>
+      <button class="btn btn-accent" onclick="confirmProductSelect()">确认选择</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* ═══════════════════════════════════════════════════════════════
+   v1.3 多行业配置
+   ═══════════════════════════════════════════════════════════════ */
+var TASKS_KEY = 'yd_tasks';
+
+function getCurrentIndustry() {
+  return localStorage.getItem('yd_industry') || '金融保险';
+}
+
+function changeIndustry(industry) {
+  var validIndustries = ['金融保险','房产经纪','教育培训','软件SaaS','医疗器械','汽车销售','电商零售','咨询服务','工厂销售'];
+  if (validIndustries.indexOf(industry) < 0) {
+    toast('无效的行业选择', 'error');
+    return;
+  }
+  localStorage.setItem('yd_industry', industry);
+  initIndustryUI();
+  toast('已切换至【' + industry + '】模式', 'success');
+}
+
+function initIndustrySelector() {
+  var select = document.getElementById('settings-industry');
+  if (!select) return;
+  select.value = getCurrentIndustry();
+}
+
+function initIndustryUI() {
+  // 根据行业更新方案生成的险种/产品选择
+  updatePlanCoverage();
+}
+
+function updatePlanCoverage() {
+  var industry = getCurrentIndustry();
+  var container = document.getElementById('plan-coverage-container');
+  if (!container) return;
+  
+  var plans = getIndustryPlans(industry);
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:12px;">';
+  plans.forEach(function(p) {
+    html += '<label class="coverage-item"><input type="checkbox" class="plan-coverage" value="' + p.type + '"> ' + p.icon + ' ' + p.type + '</label>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function getIndustryPlans(industry) {
+  var planMap = {
+    '金融保险': [
+      {icon:'⭐', type:'意外险', product:'综合意外保障计划', details:'含意外身故/伤残50万+意外医疗5万'},
+      {icon:'🛡️', type:'重疾险', product:'重大疾病保险', details:'覆盖120种重疾+60种轻症'},
+      {icon:'💊', type:'医疗险', product:'百万医疗险', details:'住院医疗最高400万'},
+      {icon:'👴', type:'养老年金', product:'养老年金保险', details:'60岁起按月/年领取'},
+      {icon:'💎', type:'终身寿险', product:'增额终身寿险', details:'保额每年3.5%递增'}
+    ],
+    '房产经纪': [
+      {icon:'🏠', type:'首置刚需', product:'刚需上车盘', details:'总价100-300万，地铁1km内'},
+      {icon:'🏡', type:'改善型', product:'改善大户型', details:'总价300-800万，学区优先'},
+      {icon:'🏫', type:'学区房', product:'优质学区房', details:'重点小学/初中划片'},
+      {icon:'🏢', type:'商业地产', product:'商铺/写字楼', details:'投资回报率5-8%'}
+    ],
+    '教育培训': [
+      {icon:'👨‍🏫', type:'一对一', product:'VIP一对一课程', details:'专属老师定制方案'},
+      {icon:'👥', type:'小班课', product:'精品小班课', details:'10-15人班，互动性强'},
+      {icon:'💻', type:'网课', product:'在线录播课', details:'自主学习，年卡制'},
+      {icon:'🏆', type:'竞赛培优', product:'竞赛冲刺班', details:'高端定制，目标导向'}
+    ],
+    '软件SaaS': [
+      {icon:'🚀', type:'基础版', product:'基础版订阅', details:'单用户，年费5000-2万'},
+      {icon:'💼', type:'专业版', product:'专业版订阅', details:'中型企业，年费5-20万'},
+      {icon:'🏢', type:'企业定制', product:'企业定制方案', details:'大型客户，年费20万+'}
+    ],
+    '医疗器械': [
+      {icon:'🩹', type:'耗材类', product:'医用耗材供应', details:'起订量100件起'},
+      {icon:'🩺', type:'设备类', product:'医疗设备销售', details:'单台5-50万'},
+      {icon:'🧪', type:'试剂类', product:'检测试剂盒', details:'盒装，月采购量导向'}
+    ],
+    '汽车销售': [
+      {icon:'🚗', type:'家用轿车', product:'家用代步车型', details:'总价10-20万'},
+      {icon:'🚙', type:'SUV/MPV', product:'家庭实用车型', details:'总价15-40万'},
+      {icon:'🏎️', type:'豪华品牌', product:'豪华品牌车型', details:'总价40万+'},
+      {icon:'⚡', type:'新能源车', product:'新能源车型', details:'有补贴政策'}
+    ],
+    '电商零售': [
+      {icon:'🎁', type:'引流款', product:'低价引流品', details:'高频刚需，拉新转化'},
+      {icon:'💎', type:'利润款', product:'主推利润品', details:'正常毛利，复购导向'},
+      {icon:'👑', type:'高端款', product:'高端旗舰品', details:'高溢价，品牌调性'}
+    ],
+    '咨询服务': [
+      {icon:'🔍', type:'诊断评估', product:'单次诊断服务', details:'2-5万，出具诊断报告'},
+      {icon:'📊', type:'专项咨询', product:'专项咨询服务', details:'3-6个月周期'},
+      {icon:'🤝', type:'年度顾问', product:'年度顾问服务', details:'长期合作，50-200万'}
+    ],
+    '工厂销售': [
+      {icon:'⚙️', type:'标准件', product:'标准件供应', details:'起订量1000件起'},
+      {icon:'🔧', type:'定制件', product:'定制加工服务', details:'打样+模具，起订5000件'},
+      {icon:'🏭', type:'OEM代工', product:'OEM代工服务', details:'按单生产，月产能导向'}
+    ]
+  };
+  return planMap[industry] || planMap['金融保险'];
+}
+
+/* ═══════════════════════════════════════════════════════
+   工具函数
+═══════════════════════════════════════════════════════ */
+function toast(msg, type) {
+  type = type || 'info';
+  var icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
+  var el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (icons[type] || icons.info) + ' ' + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(function() { el.remove(); }, 2800);
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+function getStatusBadge(status) {
+  var map = { '跟进中': 'badge-blue', '高意向': 'badge-orange', '已签单': 'badge-green', '已放弃': 'badge-gray' };
+  return '<span class="badge ' + (map[status] || 'badge-blue') + '">' + status + '</span>';
+}
+
+function getPriorityBadge(priority) {
+  var map = { '高': 'badge-red', '中': 'badge-orange', '低': 'badge-gray' };
+  return '<span class="badge ' + (map[priority] || 'badge-gray') + '">' + priority + '</span>';
+}
+
+function formatDate(str) {
+  if (!str) return '-';
+  var d = new Date(str);
+  if (isNaN(d)) return str;
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function openModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('show');
+}
+
+function closeModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+
+function switchTab(btn, tabId) {
+  var tabs = btn.closest('.tabs');
+  tabs.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  tabs.parentElement.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById(tabId).classList.add('active');
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() { toast('已复制到剪贴板！', 'success'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('已复制到剪贴板！', 'success');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   导航 & 模块切换
+═══════════════════════════════════════════════════════ */
+var MODULE_TITLES = {
+  'module-plan': '📋 方案生成',
+  'module-scripts': '💬 话术文案',
+  'module-customers': '👥 客户管理',
+  'module-tables': '📊 表格登记'
+};
+
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    var target = item.getAttribute('data-module');
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    document.querySelectorAll('.module').forEach(function(m) { m.classList.remove('active'); });
+    item.classList.add('active');
+    var targetEl = document.getElementById(target);
+    if (targetEl) targetEl.classList.add('active');
+    var titleEl = document.getElementById('topbar-title');
+    if (titleEl && MODULE_TITLES[target]) titleEl.textContent = MODULE_TITLES[target];
+    // Refresh module
+    if (target === 'module-scripts') { renderScripts(); renderCopies(); }
+    if (target === 'module-customers') { renderCustomerStats(); renderCustomers(getCustomers()); }
+    if (target === 'module-tables') renderTableTypeGrid();
+  });
+});
+
+function initModuleData() {
+  initIndustrySelector();
+  updatePlanCoverage();
+  refreshPlanCustomerSelect();
+  refreshPlanProducts();
+  renderScripts();
+  renderCopies();
+  renderCustomerStats();
+  renderCustomers(getCustomers());
+  renderTableTypeGrid();
+  renderTasks();
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE 1: 方案生成 - 关联功能
+═══════════════════════════════════════════════════════ */
+
+// 刷新方案生成的客户下拉框
+function refreshPlanCustomerSelect() {
+  var select = document.getElementById('plan-customer');
+  if (!select) return;
+  var customers = getCustomers();
+  var html = '<option value="">-- 从客户名单选择 --</option>';
+  customers.forEach(function(c) {
+    html += '<option value="' + c.id + '">' + (c.name || '未命名') + (c.company ? ' (' + c.company + ')' : '') + '</option>';
+  });
+  select.innerHTML = html;
+}
+
+// 从客户选择自动填充信息
+function fillCustomerInfo() {
+  var select = document.getElementById('plan-customer');
+  var customerId = select.value;
+  if (!customerId) {
+    // 清空表单
+    document.getElementById('plan-name').value = '';
+    document.getElementById('plan-age').value = '';
+    document.getElementById('plan-job').value = '';
+    document.getElementById('plan-income').value = '';
+    selectedProducts = [];
+    renderSelectedProducts();
+    return;
+  }
+  
+  var customers = getCustomers();
+  var customer = customers.find(function(c) { return c.id === customerId; });
+  if (!customer) return;
+  
+  document.getElementById('plan-name').value = customer.name || '';
+  document.getElementById('plan-age').value = customer.age || '';
+  document.getElementById('plan-job').value = customer.job || '';
+  document.getElementById('plan-income').value = customer.income || '';
+  
+  // 加载客户关注的产品
+  selectedProducts = customer.products || [];
+  renderSelectedProducts();
+  console.log('已加载客户关注产品:', selectedProducts);
+}
+
+// 关注产品相关
+var selectedProducts = [];
+
+function openProductSelectModal() {
+  var listContainer = document.getElementById('product-select-list');
+  if (!listContainer) return;
+  
+  var products = getTableRecords('stock') || [];
+  console.log('产品管理数据:', products);
+  console.log('数据条数:', products.length);
+  
+  if (products.length === 0) {
+    listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);"><p>暂无产品，请先在「产品管理」中添加</p><button class="btn btn-primary btn-sm" onclick="closeModal(\'modal-product-select\');switchModule(\'module-tables\');setTimeout(function(){openTableType(\'stock\')},100)">📦 前往产品管理</button></div>';
+  } else {
+    var html = '';
+    products.forEach(function(p) {
+      var name = p.name || '未命名产品';
+      var spec = p.spec ? ' (' + p.spec + ')' : '';
+      var isChecked = selectedProducts.indexOf(name) >= 0;
+      html += '<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-secondary)\'" onmouseout="this.style.background=\'transparent\'">';
+      html += '<input type="checkbox" value="' + name + '" class="product-select-cb" ' + (isChecked ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;">';
+      html += '<span style="font-size:14px;flex:1;">' + name + '<span style="color:var(--text-secondary);font-size:12px;margin-left:4px;">' + spec + '</span></span>';
+      html += '</label>';
+    });
+    listContainer.innerHTML = html;
+  }
+  
+  openModal('modal-product-select');
+}
+
+function confirmProductSelect() {
+  var checkboxes = document.querySelectorAll('.product-select-cb:checked');
+  var newSelections = [];
+  checkboxes.forEach(function(cb) {
+    newSelections.push(cb.value);
+  });
+  
+  console.log('选中的checkbox数量:', checkboxes.length);
+  console.log('选中的产品:', newSelections);
+  
+  if (newSelections.length === 0) {
+    toast('请至少选择一个产品', 'warning');
+    return;
+  }
+  
+  selectedProducts = newSelections;
+  closeModal('modal-product-select');
+  
+  // 强制渲染
+  setTimeout(function() {
+    var container = document.getElementById('plan-products-selected');
+    console.log('容器元素:', container);
+    console.log('selectedProducts:', selectedProducts);
+    renderSelectedProducts();
+  }, 100);
+  
+  toast('已添加 ' + selectedProducts.length + ' 个关注产品', 'success');
+}
+
+function clearAllProducts() {
+  if (selectedProducts.length === 0) {
+    toast('当前没有关注产品', 'info');
+    return;
+  }
+  // 打开删除选择弹窗
+  openDeleteSelectModal();
+}
+
+function openDeleteSelectModal() {
+  var listContainer = document.getElementById('product-select-list');
+  if (!listContainer) return;
+  
+  var html = '<div style="padding:8px 16px;color:var(--text-secondary);font-size:12px;border-bottom:1px solid var(--border-color);">选择要删除的关注产品</div>';
+  selectedProducts.forEach(function(name) {
+    html += '<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-secondary)\'" onmouseout="this.style.background=\'transparent\'">';
+    html += '<input type="checkbox" value="' + name + '" class="product-delete-cb" checked style="width:18px;height:18px;cursor:pointer;">';
+    html += '<span style="font-size:14px;">' + name + '</span>';
+    html += '</label>';
+  });
+  listContainer.innerHTML = html;
+  
+  // 修改弹窗标题和按钮
+  document.querySelector('#modal-product-select h3').textContent = '🗑️ 删除关注产品';
+  var footer = document.querySelector('#modal-product-select .modal-footer');
+  footer.innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-product-select\');resetProductSelectModal();">取消</button><button class="btn btn-primary" onclick="confirmDeleteProducts()" style="background:#ef5350;border-color:#ef5350;">确认删除</button>';
+  
+  openModal('modal-product-select');
+}
+
+function confirmDeleteProducts() {
+  var checkboxes = document.querySelectorAll('.product-delete-cb:checked');
+  var toDelete = [];
+  checkboxes.forEach(function(cb) {
+    toDelete.push(cb.value);
+  });
+  
+  selectedProducts = selectedProducts.filter(function(p) {
+    return toDelete.indexOf(p) < 0;
+  });
+  
+  closeModal('modal-product-select');
+  resetProductSelectModal();
+  renderSelectedProducts();
+  toast('已删除 ' + toDelete.length + ' 个关注产品', 'info');
+}
+
+function resetProductSelectModal() {
+  document.querySelector('#modal-product-select h3').textContent = '📦 选择关注产品';
+  var footer = document.querySelector('#modal-product-select .modal-footer');
+  footer.innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-product-select\')">取消</button><button class="btn btn-accent" onclick="confirmProductSelect()">确认选择</button>';
+}
+
+function removeSelectedProduct(name) {
+  selectedProducts = selectedProducts.filter(function(p) { return p !== name; });
+  renderSelectedProducts();
+}
+
+function renderSelectedProducts() {
+  var container = document.getElementById('plan-products-selected');
+  console.log('renderSelectedProducts 被调用');
+  console.log('容器:', container);
+  console.log('selectedProducts长度:', selectedProducts.length);
+  console.log('selectedProducts内容:', selectedProducts);
+  
+  if (!container) {
+    console.error('找不到 plan-products-selected 容器!');
+    return;
+  }
+  
+  if (selectedProducts.length === 0) {
+    container.innerHTML = '<span style="color:var(--text-secondary);font-size:13px;">暂无关注产品，点击上方"从产品管理选择"按钮添加</span>';
+    console.log('显示空状态');
+    return;
+  }
+  
+  var html = '';
+  selectedProducts.forEach(function(name) {
+    console.log('生成标签:', name);
+    html += '<span class="product-tag" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#e8f4ff;color:#1a73e8;border-radius:16px;font-size:13px;border:1px solid #c2e0ff;margin:2px;">';
+    html += '<span style="font-weight:500;">' + name + '</span>';
+    html += '</span>';
+  });
+  
+  console.log('生成的HTML长度:', html.length);
+  container.innerHTML = html;
+  console.log('已更新容器内容');
+}
+
+function refreshPlanProducts() {
+  // 初始化时渲染已选产品
+  renderSelectedProducts();
+}
+
+// 快捷添加产品
+function openAddProductModal() {
+  document.getElementById('quick-product-name').value = '';
+  document.getElementById('quick-product-spec').value = '';
+  document.getElementById('quick-product-qty').value = '1';
+  document.getElementById('quick-product-price').value = '';
+  openModal('modal-quick-product');
+}
+
+function saveQuickProduct() {
+  var name = document.getElementById('quick-product-name').value.trim();
+  var spec = document.getElementById('quick-product-spec').value.trim();
+  var qty = parseInt(document.getElementById('quick-product-qty').value) || 1;
+  var price = parseFloat(document.getElementById('quick-product-price').value) || 0;
+  
+  if (!name) {
+    toast('请输入产品名称', 'warning');
+    return;
+  }
+  
+  var records = getTableRecords('stock') || [];
+  var newRecord = {
+    id: 'p_' + Date.now(),
+    name: name,
+    spec: spec,
+    qty: qty,
+    price: price,
+    date: new Date().toISOString().split('T')[0]
+  };
+  records.push(newRecord);
+  saveTableRecords('stock', records);
+  
+  // 自动添加到关注产品
+  if (selectedProducts.indexOf(name) === -1) {
+    selectedProducts.push(name);
+  }
+  
+  closeModal('modal-quick-product');
+  refreshPlanProducts();
+  renderSelectedProducts();
+  toast('产品已添加并加入关注', 'success');
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE 1: 方案生成
+═══════════════════════════════════════════════════════ */
+function generatePlan() {
+  var name = document.getElementById('plan-name').value.trim();
+  var age = parseInt(document.getElementById('plan-age').value) || 0;
+  var job = document.getElementById('plan-job').value;
+  var income = parseFloat(document.getElementById('plan-income').value) || 0;
+  var checked = selectedProducts.slice();
+  var gap = document.getElementById('plan-gap').value.trim();
+  var customerId = document.getElementById('plan-customer').value;
+
+  if (!name) { toast('请输入客户姓名', 'warning'); return; }
+  if (!age) { toast('请输入客户年龄', 'warning'); return; }
+
+  // 如果选择了客户，保存关注产品到客户数据
+  if (customerId && checked.length > 0) {
+    var customers = getCustomers();
+    var customerIdx = customers.findIndex(function(c) { return c.id === customerId; });
+    if (customerIdx >= 0) {
+      customers[customerIdx].products = checked;
+      saveCustomers(customers);
+      console.log('已保存客户关注产品:', name, checked);
+    }
+  }
+
+  var plans = buildPlans(age, income, job, checked, gap);
+  var total = plans.reduce(function(s, p) { return s + (p.premium || 0); }, 0);
+
+  if (!plans || plans.length === 0) {
+    document.getElementById('plan-output').innerHTML = '<div class="empty-state" style="color:rgba(255,255,255,0.6);padding:40px 10px;"><p>未找到符合条件的方案，试试调整险种筛选</p></div>';
+    return;
+  }
+
+  var html = '<h3>📋 ' + name + ' 的销售方案</h3>';
+  plans.forEach(function(p) {
+    html += '<div class="plan-item">' +
+      '<div class="plan-item-title">' + p.icon + ' ' + p.type + '</div>' +
+      '<div class="plan-item-detail"><strong>推荐产品：</strong>' + p.product + '<br>' +
+      '<strong>保障要点：</strong>' + p.details + '<br>' +
+      '<strong>年保费估算：</strong><span style="color:var(--accent-light);font-weight:700;">¥' + p.premium.toLocaleString() + '</span></div>' +
+      '</div>';
+  });
+
+  html += '<div class="plan-summary"><p><strong>方案总结：</strong>为 ' + name + '（' + age + '岁/' + job + '）设计，包含 ' + plans.length + ' 个险种组合，年保费合计约 <strong style="color:var(--accent-light);">¥' + total.toLocaleString() + '</strong>' +
+    (gap ? '<br><strong>需求：</strong>' + gap : '') + '</p></div>';
+
+  var copyStr = plans.map(function(p) {
+    return '【' + p.type + '】\n推荐产品：' + p.product + '\n保障要点：' + p.details + '\n年保费：¥' + p.premium.toLocaleString();
+  }).join('\n\n') + '\n\n合计年保费约¥' + total.toLocaleString();
+
+  html += '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
+    '<button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);" onclick="copyText(\'' + copyStr.replace(/'/g, "\\'").replace(/\n/g, '\\n') + '\')">📋 复制方案</button>' +
+    '<button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);" onclick="exportPlanImage()">🖼️ 保存图片</button>' +
+    '<button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);" onclick="sharePlan()">📱 分享</button>' +
+    '</div>';
+
+  document.getElementById('plan-output').innerHTML = html;
+  toast('方案生成成功！', 'success');
+}
+
+function generatePlanWithAI() {
+  var name = document.getElementById('plan-name').value.trim();
+  var age = parseInt(document.getElementById('plan-age').value) || 0;
+  var job = document.getElementById('plan-job').value;
+  var income = parseFloat(document.getElementById('plan-income').value) || 0;
+  var gap = document.getElementById('plan-gap').value.trim();
+  var customerId = document.getElementById('plan-customer').value;
+  var selectedProducts = window.selectedProducts || [];
+  
+  if (!name) { toast('请输入客户姓名', 'warning'); return; }
+  if (!AI_CONFIG.key || !AI_CONFIG.model) { toast('请先在设置中配置AI', 'error'); return; }
+  
+  var industry = getCurrentIndustry();
+  var prompt = '你是保险销售金牌顾问，请为客户「' + name + '」量身定制一份打动人心、促成签单的销售方案。\n\n【基础信息】\n行业：' + industry + '\n' +
+    (age ? '年龄：' + age + '岁\n' : '') +
+    (job ? '职业：' + job + '\n' : '') +
+    (income ? '年收入：' + income + '万元\n' : '') +
+    (selectedProducts.length > 0 ? '客户关注产品：' + selectedProducts.join('、') + '\n' : '') +
+    (gap ? '客户需求/痛点：' + gap + '\n' : '') + '\n' +
+    '【核心原则】\n1. 一切推荐必须基于客户的真实需求和经济能力\n2. 产品组合要能真正解决客户问题，促成签单\n3. 语言温暖专业，有同理心，让客户感到被理解\n4. 方案呈现要有画面感，突出客户收益而非产品罗列\n\n【输出格式要求】\n一、方案标题（如：一站式保障计划）\n二、客户画像一句话总结（30字内）\n三、产品推荐（2-4款）\n  方案名称 | 核心保障 | 年保费参考 | 解决客户什么问题\n四、组合亮点（这个组合为什么适合这位客户）\n五、签单话术（1-2句话，直接能用）\n六、总保费及建议\n\n【重要】\n- 不要出现* # 等符号\n- 不要出现编号如1. 2. 3.的纯数字开头\n- 全部使用中文标点\n- 语言流畅自然，适合直接发给客户\n- 字数200-400字为佳';
+  
+  // 显示加载
+  var output = document.getElementById('plan-output');
+  output.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:40px;animation:coinSpin 1s linear infinite;">🪙</div><p style="margin-top:16px;color:var(--text-secondary);">🤖 AI智能生成中...</p></div>';
+  
+  callAI(prompt, function(content) {
+    if (!content) {
+      output.innerHTML = '<div class="empty-state"><p>生成失败，请重试</p></div>';
+      return;
+    }
+    
+    // 清理特殊符号
+    content = content.replace(/\*/g, '').replace(/#/g, '').replace(/^\d+\.\s*/gm, '').replace(/^\d+、/gm, '');
+    
+    // 格式化AI内容
+    var html = '<h3>💡 ' + name + ' 的销售方案</h3>';
+    html += '<div class="plan-ai-content" style="background:var(--bg-tertiary);border-radius:10px;padding:16px;white-space:pre-wrap;line-height:1.8;margin-bottom:16px;font-size:14px;">' + content + '</div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">' +
+      '<button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);" onclick="copyText(document.querySelector(\'.plan-ai-content\').innerText)">📋 复制方案</button>' +
+      '<button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);" onclick="exportPlanImage()">🖼️ 保存图片</button>' +
+      '</div>';
+    
+    output.innerHTML = html;
+    
+    // 保存客户信息
+    if (customerId && selectedProducts.length > 0) {
+      var customers = getCustomers();
+      var idx = customers.findIndex(function(c) { return c.id === customerId; });
+      if (idx >= 0) { customers[idx].products = selectedProducts; saveCustomers(customers); }
+    }
+    toast('AI方案生成成功！', 'success');
+  });
+}
+
+function exportPlanImage() {
+  var output = document.getElementById('plan-output');
+  if (!output) return;
+  var content = output.innerHTML;
+  var win = window.open('', '_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>赢单 v1.32 护眼版 · 快捷键版</title>' +
+    '<style>body{font-family:system-ui;padding:30px;background:#0f0f23;color:#fff;max-width:700px;margin:0 auto;}' +
+    '.plan-item{background:#1a1a2e;border-radius:12px;padding:16px;margin-bottom:12px;border-left:4px solid #4a9eff;}' +
+    '.plan-item-title{font-size:16px;font-weight:700;margin-bottom:8px;}' +
+    '.plan-item-detail{font-size:14px;line-height:1.8;}' +
+    '.plan-summary{background:#1a1a2e;border-radius:12px;padding:16px;margin-top:16px;}' +
+    '.empty-state,.actions-cell{display:none;}</style></head><body>' + content + '<p style="margin-top:20px;font-size:12px;color:#666;">由赢单展业工具箱生成</p></body></html>');
+  win.document.close();
+}
+
+function sharePlan() {
+  var output = document.getElementById('plan-output');
+  if (!output) return;
+  var text = output.innerText || output.textContent;
+  if (navigator.share) {
+    navigator.share({ title: '销售方案', text: text }).catch(function() {});
+  } else {
+    copyText(text);
+  }
+}
+
+function buildPlans(age, income, job, checked, gap) {
+  var plans = [];
+  var inc = income || 10;
+  var isYoung = age < 30;
+  var isMid = age >= 30 && age < 45;
+  var isOld = age >= 45;
+  var isHigh = inc >= 30;
+
+  if (checked.includes('产品A') || checked.length === 0) {
+    plans.push({ icon: '⭐', type: '产品A', product: '高毛利核心产品（引流款）', details: '毛利空间大、成交率高，适合快速建立信任，约占主推产品的60%', premium: isHigh ? Math.round(inc * 0.15 * 10000) : 3000 });
+  }
+
+  if (checked.includes('产品B') || checked.length === 0) {
+    if (isYoung) {
+      plans.push({ icon: '🚀', type: '产品B', product: '高潜力客户专属方案（新客版）', details: '针对年轻客户群体，主打性价比和成长性，客单价' + (isHigh ? '5-10万' : '1-3万'), premium: isHigh ? Math.round(inc * 0.12 * 10000) : 2000 });
+    } else if (isMid) {
+      plans.push({ icon: '📊', type: '产品B', product: '中高端客户深度方案（利润款）', details: '面向中层管理者/资深专业人士，强调品质与长期价值，客单价' + (isHigh ? '10-30万' : '3-8万'), premium: isHigh ? Math.round(inc * 0.2 * 10000) : 5000 });
+    } else {
+      plans.push({ icon: '🏆', type: '产品B', product: '高端大客户专项方案（旗舰款）', details: '面向企业主/高层决策者，强调稀缺性和专属服务，客单价' + (isHigh ? '30万+' : '10万+'), premium: isHigh ? Math.round(inc * 0.3 * 10000) : 10000 });
+    }
+  }
+
+  if (checked.includes('产品C') || checked.length === 0) {
+    if (isMid) {
+      plans.push({ icon: '🔗', type: '产品C', product: '企业级解决方案（定制版）', details: '按需定制，整合多产品线，打包价更优，适合中型企业客户', premium: isHigh ? Math.round(inc * 0.25 * 10000) : 6000 });
+    } else if (isHigh) {
+      plans.push({ icon: '🌐', type: '产品C', product: '集团战略合作方案（VIP版）', details: '最高级别合作模式，含专属团队、绿色通道、全方位支持', premium: Math.round(inc * 0.4 * 10000) });
+    }
+  }
+
+  if (checked.includes('产品D') || checked.length === 0) {
+    plans.push({ icon: '⚡', type: '产品D', product: '快速成交体验包（首单款）', details: '低门槛切入，让客户快速体验产品价值，培养信任感，客单价' + (isHigh ? '5000-2万' : '1000-5000'), premium: isHigh ? 8000 : 2000 });
+  }
+
+  if (checked.includes('产品E') || checked.includes('产品F')) {
+    plans.push({ icon: '💎', type: '产品E', product: '长期战略合作包（年度款）', details: '年框合作模式，锁定客户全年需求，享阶梯优惠和专属服务' + (isMid || isHigh ? '，大幅提升客户粘性和复购率' : ''), premium: isHigh ? Math.round(inc * 0.18 * 10000) : 4000 });
+  }
+
+  return plans;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE 2: 话术文案
+═══════════════════════════════════════════════════════ */
+var DEFAULT_SCRIPTS = [{ id: 's1', category: '首次接触', text: '您好，我是[姓名]，有[X]年行业经验。今天想花5分钟和您聊聊，看看有没有能帮到您的地方——先了解不吃亏，您方便吗？' },
+  { id: 's2', category: '首次接触', text: 'XX总您好！了解到您最近在[业务场景]，正好我这边刚服务过一个情况类似的客户，有一些经验可以分享，不一定对您有用，但或许能给您一些参考。' },
+  { id: 's3', category: '需求激发', text: '您现在每个月的[核心痛点/支出]大概是什么量级？如果遇到[最大风险场景]，您的[资金/资源]能撑多久？这个问题的答案决定了我们需要多认真地做规划。' },
+  { id: 's4', category: '需求激发', text: '我见过很多客户，都是在[某个关键时刻]才意识到要提前准备，但那时候成本已经高了很多。您的企业/家庭目前在这块的规划，大概是什么状态？' },
+  { id: 's5', category: '方案呈现', text: '根据您的情况，我整理了一个方案：核心思路是[产品定位]，具体包含[产品组合]，整体投入[X万/年]，预计能解决[核心问题]。' },
+  { id: 's6', category: '方案呈现', text: '这套方案的核心价值是[最独特的卖点]。相比市场上的常规方案，它的优势在于[差异化]，您觉得这个方向对您有吸引力吗？' },
+  { id: 's7', category: '促成签单', text: '这个方案我很确定适合您，今天确认的话，我可以帮您争取[额外优惠/优先服务]，您看今天能定下来吗？' },
+  { id: 's8', category: '促成签单', text: 'XX总，本月还剩[X个]名额，今天签约可以优先安排。这个决定早一天落实，您也能早一天开始受益——您看这个星期内我们把这件事定下来？' },
+  { id: 's9', category: '异议处理', text: '您说"再比较一下"，完全理解。我建议您可以带着这几个核心问题去对比：①[核心判断标准] ②[售后服务保障] ③[顾问的专业度]。比完您再来找我，这样也更踏实。' },
+  { id: 's10', category: '异议处理', text: '您觉得"价格太高"，我理解。说实话，市场上确实有更便宜的选项，但区别在于：[核心差异]。长期来看，这部分的投入回报率其实是很可观的。' },
+  { id: 's11', category: '异议处理', text: '您说"我再想想"，我想说的是：不用急着做决定，但也不要无限期拖下去。市场每天都在变，早一步行动就早一步受益。我先帮您把方案留着，您想清楚随时来找我。' }
+];
+
+var DEFAULT_COPIES = [{ id: 'c1', text: '📚 今日销售干货：\n\n客户说"我再考虑一下"，这句话的潜台词是什么？\n\n① 还没感到足够的必要性\n② 担心做了错误的决定\n③ 想多对比几家\n\n对应的三步策略：\n→ 强调不行动的损失（痛点放大）\n→ 提供试用/体验机会（降低决策门槛）\n→ 给出明确的成交信号（限时/名额）\n\n有遇到类似情况的同行吗？留言聊聊~', time: '朋友圈' },
+  { id: 'c2', text: '🔔 销售一线真实案例：\n\n小王跟进一个客户谈了3个月，一直卡在"太贵了"这个异议上。\n\n后来他换了一个方式：\n→ 问客户："您觉得贵，是因为超出预算，还是觉得不值这个价？"\n→ 客户答："不知道值不值。"\n→ 小王立刻安排了产品体验环节，让客户亲身感受。\n→ 体验结束后，客户主动问："这个怎么买？"\n\n有时候不是价格问题，是价值传递的问题。\n\n你有哪些破局经验？评论区见👇', time: '朋友圈' },
+  { id: 'c3', text: '💡 签单前必确认的5个问题：\n\n1️⃣ 需求确认了吗？—— 客户真的需要这个吗？\n2️⃣ 预算匹配了吗？—— 客户能承受这个价格区间？\n3️⃣ 决策链清晰了吗？—— 还有谁参与决策？\n4️⃣ 竞品对比过了吗？—— 客户有没有同时看别家？\n5️⃣ 成交信号出现了吗？—— 客户有没有主动提问？\n\n这5个问题都确认清楚再逼单，成功率翻倍。\n\n有任何销售问题，留言区提问，我来答~', time: '朋友圈' },
+  { id: 'c4', text: '🏆 客户真实反馈：\n\n"本来只是想随便了解一下，没想到顾问给的分析让我眼前一亮。"\n\n"聊完才发现，我之前根本没想清楚自己的真实需求。"\n\n"全程没有硬推销，感觉是在帮我做决策，不是单纯卖产品。"\n\n最高级的销售，是让客户觉得这是他自己的选择。\n\n想聊聊你的销售经历吗？评论区等你~', time: '朋友圈' },
+  { id: 'c5', text: '⏰ 重要提醒：\n\n成交的窗口期，往往比想象中短。\n\n客户今天热情高涨，三天后可能就冷却了。\n\n所以：\n→ 有意向的客户，今天就推进\n→ 方案当天出，绝不过夜\n→ 成交信号一出现，立刻收单\n\n等待，是销售最大的敌人。\n\n还在犹豫的同行，今天迈出第一步吧！💪', time: '朋友圈' }
+];
+
+function getScripts() {
+  var data = localStorage.getItem('yd_scripts');
+  if (!data) {
+    localStorage.setItem('yd_scripts', JSON.stringify(DEFAULT_SCRIPTS));
+    return DEFAULT_SCRIPTS;
+  }
+  return JSON.parse(data);
+}
+
+function getCopies() {
+  var data = localStorage.getItem('yd_copies');
+  if (!data) {
+    localStorage.setItem('yd_copies', JSON.stringify(DEFAULT_COPIES));
+    return DEFAULT_COPIES;
+  }
+  var copies = JSON.parse(data);
+  var now = Date.now();
+  var filtered = copies.filter(function(c) {
+    if (c.starred) return true;
+    if (!c.createdAt) return true;
+    return (now - c.createdAt) < 24 * 60 * 60 * 1000;
+  });
+  if (filtered.length !== copies.length) localStorage.setItem('yd_copies', JSON.stringify(filtered));
+  return filtered;
+}
+
+function renderScripts() {
+  var scripts = getScripts();
+  var categories = ['首次接触', '需求激发', '方案呈现', '促成签单', '异议处理'];
+  var icons = { '首次接触': '🤝', '需求激发': '💡', '方案呈现': '📊', '促成签单': '✅', '异议处理': '💪' };
+  var html = '';
+  categories.forEach(function(cat) {
+    var items = scripts.filter(function(s) { return s.category === cat; });
+    if (!items.length) return;
+    html += '<div class="script-category">' +
+      '<div class="script-category-title">' + (icons[cat] || '📁') + ' ' + cat + '（' + items.length + '条）</div>';
+    items.forEach(function(s) {
+      html += '<div class="script-card" id="script-' + s.id + '">' +
+        '<div class="script-text">' + s.text.replace(/\n/g, '<br>') + '</div>' +
+        '<div class="script-actions">' +
+        '<button class="btn btn-sm btn-outline" onclick="copyScript(\'' + s.id + '\')">📋 复制</button> ' +
+        '<button class="btn btn-sm btn-ghost" onclick="deleteScript(\'' + s.id + '\')" style="color:#ef5350;">🗑️</button>' +
+        '</div></div>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('script-list-container').innerHTML = html || '<div class="empty-state"><div class="icon">💬</div><p>暂无话术，点击"新增话术"添加</p></div>';
+}
+
+function renderCopies() {
+  var copies = getCopies();
+  var unstarredCount = copies.filter(function(c) { return !c.starred; }).length;
+  var html = '<div class="script-category">' +
+    '<div class="script-category-title">📱 朋友圈文案（' + copies.length + '条）' +
+    (unstarredCount > 0 ? ' <span style="font-size:11px;color:var(--text-secondary);">（未留存的将在24小时后自动删除）</span>' : '') + '</div>';
+  copies.forEach(function(c) {
+    var starIcon = c.starred ? '⭐' : '☆';
+    var starTitle = c.starred ? '取消留存' : '点击留存';
+    html += '<div class="script-card" id="copy-' + c.id + '">' +
+      '<div class="script-text">' + c.text.replace(/\n/g, '<br>') + '</div>' +
+      '<div class="script-actions">' +
+      '<button class="btn btn-sm" onclick="toggleCopyStar(\'' + c.id + '\')" style="color:' + (c.starred ? '#f0b429' : '#ccc') + ';font-size:16px;" title="' + starTitle + '">' + starIcon + '</button> ' +
+      '<button class="btn btn-sm btn-accent" onclick="copyScript(\'' + c.id + '\', true)">📋 复制</button> ' +
+      '<button class="btn btn-sm btn-ghost" onclick="deleteCopy(\'' + c.id + '\')" style="color:#ef5350;">🗑️</button>' +
+      '</div></div>';
+  });
+  html += '</div>';
+  var container = document.getElementById('copy-list-container');
+  if (container) container.innerHTML = html || '<div class="empty-state"><div class="icon">📱</div><p>暂无文案，点击"新增文案"添加</p></div>';
+}
+
+function toggleCopyStar(id) {
+  var copies = getCopies();
+  var idx = copies.findIndex(function(c) { return c.id === id; });
+  if (idx >= 0) {
+    copies[idx].starred = !copies[idx].starred;
+    localStorage.setItem('yd_copies', JSON.stringify(copies));
+    renderCopies();
+    toast(copies[idx].starred ? '已留存该文案' : '已取消留存', 'info');
+  }
+}
+
+function copyScript(id, isCopy) {
+  var arr = isCopy ? getCopies() : getScripts();
+  var item = arr.find(function(x) { return x.id === id; });
+  if (item) copyText(item.text);
+}
+
+function deleteScript(id) {
+  var scripts = getScripts().filter(function(s) { return s.id !== id; });
+  localStorage.setItem('yd_scripts', JSON.stringify(scripts));
+  renderScripts();
+  toast('话术已删除', 'success');
+}
+
+function deleteCopy(id) {
+  var copies = getCopies().filter(function(c) { return c.id !== id; });
+  localStorage.setItem('yd_copies', JSON.stringify(copies));
+  renderCopies();
+  toast('文案已删除', 'success');
+}
+
+var editingScriptId = null;
+
+function openScriptModal(id) {
+  editingScriptId = id;
+  var scripts = getScripts();
+  var s = id ? scripts.find(function(x) { return x.id === id; }) : null;
+  document.getElementById('script-modal-category').value = s ? s.category : '首次接触';
+  document.getElementById('script-modal-content').value = s ? s.text : '';
+  document.getElementById('script-modal-title').textContent = s ? '编辑话术' : '新增话术';
+  document.getElementById('modal-script').classList.add('show');
+}
+
+function openCopyModal() {
+  document.getElementById('script-modal-category').value = '朋友圈';
+  document.getElementById('script-modal-content').value = '';
+  document.getElementById('script-modal-title').textContent = '新增朋友圈文案';
+  editingScriptId = '__copy__';
+  document.getElementById('modal-script').classList.add('show');
+}
+
+function saveScript() {
+  var category = document.getElementById('script-modal-category').value;
+  var text = document.getElementById('script-modal-content').value.trim();
+  if (!text) { toast('请输入内容', 'warning'); return; }
+
+  if (editingScriptId === '__copy__') {
+    var copies = getCopies();
+    copies.unshift({ id: genId(), text: text, time: new Date().toLocaleString() });
+    localStorage.setItem('yd_copies', JSON.stringify(copies));
+    toast('文案保存成功！', 'success');
+    closeModal('modal-script');
+    renderCopies();
+  } else {
+    var scripts = getScripts();
+    if (editingScriptId) {
+      var idx = scripts.findIndex(function(s) { return s.id === editingScriptId; });
+      if (idx >= 0) { scripts[idx].category = category; scripts[idx].text = text; }
+    } else {
+      scripts.unshift({ id: genId(), category: category, text: text });
+    }
+    localStorage.setItem('yd_scripts', JSON.stringify(scripts));
+    toast('话术保存成功！', 'success');
+    closeModal('modal-script');
+    renderScripts();
+  }
+  editingScriptId = null;
+}
+
+// ═══════════════════════════════════════════════════════
+// AI 话术/文案生成
+// ═══════════════════════════════════════════════════════
+function generateScriptWithAI() {
+  if (!AI_CONFIG.key || !AI_CONFIG.model) {
+    toast('请先在设置中配置AI', 'error');
+    return;
+  }
+  
+  var category = document.getElementById('script-modal-category').value;
+  var industry = getCurrentIndustry();
+  var customerName = document.getElementById('plan-name') ? document.getElementById('plan-name').value.trim() : '';
+  var customerJob = document.getElementById('plan-job') ? document.getElementById('plan-job').value.trim() : '';
+  var customerAge = document.getElementById('plan-age') ? document.getElementById('plan-age').value.trim() : '';
+  var selectedProducts = window.selectedProducts || [];
+  
+  var categoryMap = {
+    '首次接触': '开场白、破冰、获取信任的话术',
+    '需求激发': '挖掘客户需求、激发购买意愿的话术',
+    '方案呈现': '介绍产品方案、讲解优势的话术',
+    '促成签单': '推动成交、消除顾虑的话术',
+    '异议处理': '处理客户拒绝、质疑的话术'
+  };
+  
+  var prompt = '作为保险销售专家，请生成一段专业的"' + category + '"话术。\n';
+  if (customerName) prompt += '客户姓名：' + customerName + '\n';
+  if (customerAge) prompt += '客户年龄：' + customerAge + '岁\n';
+  if (customerJob) prompt += '客户职业：' + customerJob + '\n';
+  if (selectedProducts.length > 0) prompt += '客户关注产品：' + selectedProducts.join('、') + '\n';
+  prompt += '\n要求：\n1. 适合' + industry + '行业的销售场景\n2. 2-3段话术，自然流畅\n3. 突出产品价值和客户利益\n4. 结尾有明确的行动指引';
+  
+  callAI(prompt, function(content) {
+    if (content) {
+      document.getElementById('script-modal-content').value = content;
+      document.getElementById('script-modal-content').focus();
+      toast('话术生成成功，可编辑后再保存', 'success');
+    }
+  });
+}
+
+function generateCopyWithAI() {
+  if (!AI_CONFIG.key || !AI_CONFIG.model) { toast('请先在设置中配置AI', 'error'); return; }
+  
+  var btn = document.querySelector('.copy-ai-btn');
+  if (btn) { btn.textContent = '🪙 文案生成中...'; btn.disabled = true; }
+  
+  var industry = getCurrentIndustry();
+  var customerName = document.getElementById('plan-name') ? document.getElementById('plan-name').value.trim() : '';
+  var selectedProducts = window.selectedProducts || [];
+  
+  var prompt = '请为保险销售生成一条朋友圈文案：\n';
+  if (selectedProducts.length > 0) prompt += '产品主题：' + selectedProducts.join('、') + '\n';
+  if (customerName) prompt += '目标客户画像：' + customerName + '\n';
+  prompt += '\n要求：\n1. 适合' + industry + '行业\n2. 引发共鸣，有温度\n3. 促进互动和转发\n4. 200字以内，带适当emoji\n5. 结尾有明确的行动号召\n6. 适合微信朋友圈传播';
+  
+  callAI(prompt, function(content) {
+    if (content) {
+      // 自动添加到朋友圈文案库
+      var copies = getCopies();
+      copies.unshift({ id: genId(), text: content, time: new Date().toLocaleString(), createdAt: Date.now() });
+      localStorage.setItem('yd_copies', JSON.stringify(copies));
+      renderCopies();
+      // 切换到朋友圈文案标签
+      var copyTab = document.querySelector('.tab-btn[onclick*="tab-copy-library"]');
+      if (copyTab) copyTab.click();
+      toast('文案已生成并添加到文案库！', 'success');
+    } else {
+      toast('文案生成失败，请重试', 'error');
+    }
+    if (btn) { btn.textContent = '🤖 AI生成文案'; btn.disabled = false; }
+  });
+}
+
+function callAI(prompt, callback) {
+  var industry = getCurrentIndustry();
+  var systemMsg = '你是一位专业、经验丰富的保险销售顾问。你的职责是：1)根据客户信息提供个性化话术建议；2)生成高质量的朋友圈销售文案；3)用专业、亲切、易懂的语言回答。请根据用户需求生成内容，直接输出一段话术或文案，不要有其他解释。';
+  
+  var contextInfo = '\n【当前场景】\n从事行业：' + industry + '\n';
+  var customerName = document.getElementById('plan-name') ? document.getElementById('plan-name').value.trim() : '';
+  if (customerName) contextInfo += '客户姓名：' + customerName + '\n';
+  
+  // 显示加载
+  var textarea = document.getElementById('script-modal-content');
+  var originalPlaceholder = textarea.placeholder;
+  textarea.placeholder = '🤖 AI生成中...';
+  textarea.disabled = true;
+  
+  fetch(AI_CONFIG.url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + AI_CONFIG.key
+    },
+    body: JSON.stringify({
+      model: AI_CONFIG.model,
+      messages: [
+        {role: 'system', content: systemMsg + contextInfo},
+        {role: 'user', content: prompt}
+      ],
+      stream: false,
+      temperature: 0.8,
+      max_tokens: 1024
+    })
+  })
+  .then(function(res) {
+    textarea.placeholder = originalPlaceholder;
+    textarea.disabled = false;
+    if (!res.ok) {
+      return res.text().then(function(text) {
+        throw new Error('HTTP ' + res.status + ': ' + text);
+      });
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      callback(data.choices[0].message.content);
+    } else if (data.error) {
+      toast('AI错误: ' + (data.error.message || JSON.stringify(data.error)), 'error');
+      callback(null);
+    } else {
+      toast('响应格式异常', 'error');
+      callback(null);
+    }
+  })
+  .catch(function(err) {
+    textarea.placeholder = originalPlaceholder;
+    textarea.disabled = false;
+    toast('请求失败: ' + err.message, 'error');
+    callback(null);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE 3: 客户管理
+═══════════════════════════════════════════════════════ */
+function getCustomers() {
+  var data = localStorage.getItem('yd_customers');
+  if (!data) return [];
+  try { return JSON.parse(data); } catch(e) { return []; }
+}
+
+function saveCustomers(arr) {
+  localStorage.setItem('yd_customers', JSON.stringify(arr));
+}
+
+function renderCustomerStats() {
+  var customers = getCustomers();
+  var total = customers.length;
+  var following = customers.filter(function(c) { return c.status === '跟进中'; }).length;
+  var intent = customers.filter(function(c) { return c.status === '高意向'; }).length;
+  var signed = customers.filter(function(c) { return c.status === '已签单'; }).length;
+  document.getElementById('customer-stats').innerHTML =
+    '<div class="stat-card"><div class="label">客户总数</div><div class="value">' + total + '</div><div class="sub">全部客户</div></div>' +
+    '<div class="stat-card"><div class="label">跟进中</div><div class="value" style="color:#1565c0;">' + following + '</div><div class="sub">待推进</div></div>' +
+    '<div class="stat-card"><div class="label">高意向</div><div class="value" style="color:#e65100;">' + intent + '</div><div class="sub">重点跟进</div></div>' +
+    '<div class="stat-card"><div class="label">已签单</div><div class="value" style="color:#2e7d32;">' + signed + '</div><div class="sub">签单客户</div></div>';
+}
+
+function renderCustomers(customers) {
+  var tbody = document.getElementById('customer-table-body');
+  if (!customers || customers.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center"><div class="empty-state"><div class="icon">👥</div><p>暂无客户，点击右上角"新增客户"添加</p></div></td></tr>';
+    return;
+  }
+  // 排序：置顶的在前
+  customers = customers.slice().sort(function(a, b) {
+    var aPinned = a.pinned ? 1 : 0;
+    var bPinned = b.pinned ? 1 : 0;
+    return bPinned - aPinned;
+  });
+  var html = customers.map(function(c) {
+    var pinnedStyle = c.pinned ? ' style="background:rgba(240,180,41,0.08);"' : '';
+    return '<tr' + pinnedStyle + '>' +
+      '<td><div style="display:flex;align-items:center;gap:8px;"><button class="btn btn-sm btn-ghost" onclick="toggleCustomerPin(\'' + c.id + '\')" style="color:' + (c.pinned ? '#f0b429' : '#ccc') + ';padding:2px 4px;font-size:14px;" title="' + (c.pinned ? '取消置顶' : '置顶') + '">' + (c.pinned ? '⭐' : '☆') + '</button><strong>' + c.name + '</strong></div></td>' +
+      '<td>' + (c.age || '-') + '</td>' +
+      '<td>' + (c.job || '-') + '</td>' +
+      '<td>' + (c.income ? c.income + '万' : '-') + '</td>' +
+      '<td>' + getStatusBadge(c.status) + '</td>' +
+      '<td>' + getPriorityBadge(c.priority) + '</td>' +
+      '<td style="font-size:12px;color:var(--text-secondary);">' + formatDate(c.lastFollow) + '</td>' +
+      '<td>' +
+      '<div class="actions-cell">' +
+      '<button class="btn btn-sm btn-ghost" onclick="viewCustomer(\'' + c.id + '\')" title="查看详情">👁️</button>' +
+      '<button class="btn btn-sm btn-ghost" onclick="editCustomer(\'' + c.id + '\')" title="编辑">✏️</button>' +
+      '<button class="btn btn-sm btn-ghost" onclick="deleteCustomer(\'' + c.id + '\')" style="color:#ef5350;" title="删除">🗑️</button>' +
+      '</div></td></tr>';
+  }).join('');
+  tbody.innerHTML = html;
+}
+
+function toggleCustomerPin(id) {
+  var customers = getCustomers();
+  var idx = customers.findIndex(function(c) { return c.id === id; });
+  if (idx >= 0) {
+    customers[idx].pinned = !customers[idx].pinned;
+    saveCustomers(customers);
+    // 重新渲染（保留当前筛选状态）
+    filterCustomers();
+    toast(customers[idx].pinned ? '已置顶：' + customers[idx].name : '已取消置顶', 'info');
+  }
+}
+
+function filterCustomers() {
+  var keyword = document.getElementById('customer-search').value.trim().toLowerCase();
+  var statusFilter = document.getElementById('filter-status').value;
+  var priorityFilter = document.getElementById('filter-priority').value;
+  var all = getCustomers();
+  var filtered = all.filter(function(c) {
+    var matchKw = !keyword || c.name.toLowerCase().includes(keyword) || (c.job && c.job.toLowerCase().includes(keyword));
+    var matchSt = !statusFilter || c.status === statusFilter;
+    var matchPr = !priorityFilter || c.priority === priorityFilter;
+    return matchKw && matchSt && matchPr;
+  });
+  renderCustomers(filtered);
+}
+
+function openCustomerModal(id) {
+  document.getElementById('customer-edit-id').value = id || '';
+  document.getElementById('customer-modal-title').textContent = id ? '编辑客户' : '新增客户';
+  if (id) {
+    var c = getCustomers().find(function(x) { return x.id === id; });
+    if (c) {
+      document.getElementById('cust-name').value = c.name || '';
+      document.getElementById('cust-age').value = c.age || '';
+      document.getElementById('cust-job').value = c.job || '';
+      document.getElementById('cust-income').value = c.income || '';
+      document.getElementById('cust-status').value = c.status || '跟进中';
+      document.getElementById('cust-priority').value = c.priority || '中';
+      document.getElementById('cust-note').value = c.note || '';
+    }
+  } else {
+    ['cust-name','cust-age','cust-job','cust-income','cust-note'].forEach(function(fid) { document.getElementById(fid).value = ''; });
+    document.getElementById('cust-status').value = '跟进中';
+    document.getElementById('cust-priority').value = '中';
+  }
+  document.getElementById('modal-customer').classList.add('show');
+}
+
+function editCustomer(id) { openCustomerModal(id); }
+
+function saveCustomer() {
+  var name = document.getElementById('cust-name').value.trim();
+  if (!name) { toast('请输入客户姓名', 'warning'); return; }
+  var id = document.getElementById('customer-edit-id').value;
+  var customer = {
+    id: id || genId(),
+    name: name,
+    age: parseInt(document.getElementById('cust-age').value) || '',
+    job: document.getElementById('cust-job').value,
+    income: parseFloat(document.getElementById('cust-income').value) || '',
+    status: document.getElementById('cust-status').value,
+    priority: document.getElementById('cust-priority').value,
+    note: document.getElementById('cust-note').value,
+    lastFollow: id ? (getCustomers().find(function(c) { return c.id === id; }) || {}).lastFollow : null,
+    follows: id ? (getCustomers().find(function(c) { return c.id === id; }) || {}).follows || [] : []
+  };
+  var customers = getCustomers();
+  if (id) {
+    var idx = customers.findIndex(function(c) { return c.id === id; });
+    if (idx >= 0) customers[idx] = customer; else customers.unshift(customer);
+  } else {
+    customers.unshift(customer);
+  }
+  saveCustomers(customers);
+  closeModal('modal-customer');
+  renderCustomerStats();
+  renderCustomers(customers);
+  toast(id ? '客户已更新！' : '客户已添加！', 'success');
+}
+
+function viewCustomer(id) {
+  var c = getCustomers().find(function(x) { return x.id === id; });
+  if (!c) return;
+  document.getElementById('customer-detail-name').textContent = '📋 ' + c.name + ' — 客户详情';
+  var follows = c.follows || [];
+  var products = c.products || [];
+  var body = document.getElementById('customer-detail-body');
+  
+  // 关注产品显示 + 添加按钮
+  var productsHtml = products.length ? products.map(function(p) {
+    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#e8f4ff;color:#1a73e8;border-radius:12px;font-size:12px;margin:2px;">' + p + '</span>';
+  }).join('') : '<span style="color:var(--text-secondary);font-size:13px;">暂无关注产品</span>';
+  
+  var followsHtml = follows.length ? follows.slice().reverse().map(function(f) {
+    return '<div class="follow-item"><span class="follow-date">' + f.date + '</span> — ' + f.text + '</div>';
+  }).join('') : '<p style="color:var(--text-secondary);font-size:13px;">暂无跟进记录</p>';
+  
+  body.innerHTML = '<div style="margin-bottom:16px;">' +
+    '<div class="grid-2" style="margin-bottom:12px;">' +
+    '<div><strong>年龄：</strong>' + (c.age||'-') + '</div>' +
+    '<div><strong>职业：</strong>' + (c.job||'-') + '</div>' +
+    '<div><strong>年收入：</strong>' + (c.income ? c.income+'万' : '-') + '</div>' +
+    '<div><strong>状态：</strong>' + getStatusBadge(c.status) + '</div>' +
+    '<div><strong>优先级：</strong>' + getPriorityBadge(c.priority) + '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:16px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+    '<strong>关注产品：</strong>' +
+    '<button class="btn btn-primary btn-sm" onclick="openCustomerProductSelect(\'' + c.id + '\')">➕ 添加产品</button>' +
+    '</div>' +
+    '<div id="customer-detail-products">' + productsHtml + '</div>' +
+    '</div>' +
+    (c.note ? '<div style="padding:10px;background:#f5f5f5;border-radius:6px;margin-bottom:16px;"><strong>备注：</strong>' + c.note + '</div>' : '') +
+    '<h4 style="margin-bottom:10px;">跟进记录（' + follows.length + '条）</h4>' +
+    '<div id="follow-list">' + followsHtml + '</div>' +
+    '<div style="margin-top:12px;display:flex;gap:8px;align-items:center;">' +
+    '<input type="date" id="follow-date" class="form-control" style="flex:0 0 130px;" value="' + new Date().toISOString().slice(0,10) + '">' +
+    '<input type="text" id="follow-text" class="form-control" style="flex:1;" placeholder="输入跟进内容（回车快捷添加）..." onkeydown="if(event.key===\"Enter\"){event.preventDefault();addFollow(\'' + c.id + '\');}">' +
+    '<button class="btn btn-primary btn-sm" onclick="addFollow(\'' + c.id + '\')">添加</button>' +
+    '</div></div>';
+  document.getElementById('modal-customer-detail').classList.add('show');
+}
+
+// 客户详情页 - 添加关注产品
+var currentEditCustomerId = null;
+
+function openCustomerProductSelect(customerId) {
+  currentEditCustomerId = customerId;
+  var listContainer = document.getElementById('product-select-list');
+  if (!listContainer) return;
+  
+  var c = getCustomers().find(function(x) { return x.id === customerId; });
+  var currentProducts = c ? (c.products || []) : [];
+  
+  var products = getTableRecords('stock') || [];
+  
+  if (products.length === 0) {
+    listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);"><p>暂无产品，请先在「产品管理」中添加</p><button class="btn btn-primary btn-sm" onclick="closeModal(\'modal-product-select\');switchModule(\'module-tables\');setTimeout(function(){openTableType(\'stock\')},100)">📦 前往产品管理</button></div>';
+  } else {
+    var html = '';
+    products.forEach(function(p) {
+      var name = p.name || '未命名产品';
+      var isChecked = currentProducts.indexOf(name) >= 0;
+      html += '<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-secondary)\'" onmouseout="this.style.background=\'transparent\'">';
+      html += '<input type="checkbox" value="' + name + '" class="product-select-cb" ' + (isChecked ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;">';
+      html += '<span style="font-size:14px;flex:1;">' + name + '</span>';
+      html += '</label>';
+    });
+    listContainer.innerHTML = html;
+  }
+  
+  // 修改弹窗标题
+  document.querySelector('#modal-product-select h3').textContent = '📦 为 ' + (c ? c.name : '客户') + ' 添加关注产品';
+  var footer = document.querySelector('#modal-product-select .modal-footer');
+  footer.innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'modal-product-select\');resetProductSelectModal();">取消</button><button class="btn btn-accent" onclick="confirmCustomerProductSelect()">确认</button>';
+  
+  openModal('modal-product-select');
+}
+
+function confirmCustomerProductSelect() {
+  if (!currentEditCustomerId) return;
+  
+  var checkboxes = document.querySelectorAll('.product-select-cb:checked');
+  var newProducts = [];
+  checkboxes.forEach(function(cb) {
+    newProducts.push(cb.value);
+  });
+  
+  var customers = getCustomers();
+  var idx = customers.findIndex(function(c) { return c.id === currentEditCustomerId; });
+  if (idx >= 0) {
+    customers[idx].products = newProducts;
+    saveCustomers(customers);
+  }
+  
+  closeModal('modal-product-select');
+  resetProductSelectModal();
+  
+  // 刷新客户详情显示
+  setTimeout(function() {
+    viewCustomer(currentEditCustomerId);
+  }, 100);
+  
+  toast('已更新关注产品', 'success');
+}
+
+function renderFollowList(id) {
+  var c = getCustomers().find(function(x) { return x.id === id; });
+  if (!c) return;
+  var follows = c.follows || [];
+  var el = document.getElementById('follow-list');
+  if (!el) return;
+  if (!follows.length) {
+    el.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">暂无跟进记录</p>';
+    return;
+  }
+  el.innerHTML = follows.slice().reverse().map(function(f) {
+    return '<div class="follow-item"><span class="follow-date">' + f.date + '</span> — ' + f.text + '</div>';
+  }).join('');
+}
+
+function addFollow(id) {
+  var date = document.getElementById('follow-date').value;
+  var text = document.getElementById('follow-text').value.trim();
+  if (!text) { toast('请输入跟进内容', 'warning'); return; }
+  var customers = getCustomers();
+  var idx = customers.findIndex(function(c) { return c.id === id; });
+  if (idx < 0) return;
+  if (!customers[idx].follows) customers[idx].follows = [];
+  customers[idx].follows.push({ date: date || new Date().toISOString().slice(0,10), text: text });
+  customers[idx].lastFollow = new Date().toISOString();
+  saveCustomers(customers);
+  renderFollowList(id);
+  renderCustomerStats();
+  toast('跟进记录已添加', 'success');
+}
+
+function deleteCustomer(id) {
+  if (!confirm('确定要删除该客户吗？')) return;
+  var customers = getCustomers().filter(function(c) { return c.id !== id; });
+  saveCustomers(customers);
+  renderCustomers(customers);
+  renderCustomerStats();
+  toast('客户已删除', 'success');
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE 4: 表格登记
+═══════════════════════════════════════════════════════ */
+var TABLE_COLUMNS = {
+  stock: [
+    { key: 'name', label: '产品名称', type: 'text' },
+    { key: 'spec', label: '规格', type: 'text' },
+    { key: 'qty', label: '数量', type: 'number' },
+    { key: 'price', label: '单价(元)', type: 'number' },
+    { key: 'date', label: '入库日期', type: 'date' }
+  ],
+  ledger: [
+    { key: 'date', label: '日期', type: 'date' },
+    { key: 'desc', label: '摘要', type: 'text' },
+    { key: 'type', label: '类型', type: 'select', opts: ['收入', '支出'] },
+    { key: 'amount', label: '金额(元)', type: 'number' },
+    { key: 'remark', label: '备注', type: 'text' }
+  ],
+  asset: [
+    { key: 'name', label: '资产名称', type: 'text' },
+    { key: 'type', label: '资产类型', type: 'select', opts: ['房产', '车辆', '存款', '股票', '基金', '其他'] },
+    { key: 'value', label: '价值(万元)', type: 'number' },
+    { key: 'date', label: '登记日期', type: 'date' }
+  ],
+  performance: [
+    { key: 'month', label: '月份', type: 'month' },
+    { key: 'name', label: '姓名', type: 'text' },
+    { key: 'newPrem', label: '新单保费(元)', type: 'number' },
+    { key: 'newCount', label: '新单件数', type: 'number' },
+    { key: 'followCount', label: '跟进次数', type: 'number' }
+  ],
+  custom: [
+    { key: 'field1', label: '字段1', type: 'text' },
+    { key: 'field2', label: '字段2', type: 'text' },
+    { key: 'field3', label: '字段3', type: 'text' },
+    { key: 'field4', label: '字段4', type: 'text' },
+    { key: 'field5', label: '字段5', type: 'text' }
+  ]
+};
+
+var TABLE_NAMES = {
+  stock: '📦 产品管理',
+  ledger: '💰 流水记录',
+  asset: '🏠 资产管理',
+  performance: '📈 业绩统计',
+  custom: '📋 自定义表格'
+};
+
+var currentTableType = null;
+
+function renderTableTypeGrid() {
+  var grid = document.getElementById('table-type-grid');
+  if (!grid) return;
+  var html = '';
+  Object.keys(TABLE_NAMES).forEach(function(type) {
+    var parts = TABLE_NAMES[type].split(' ');
+    html += '<div class="table-type-card" onclick="openTableType(\'' + type + '\')">' +
+      '<div class="table-type-icon">' + parts[0] + '</div>' +
+      '<div class="table-type-name">' + parts.slice(1).join(' ') + '</div>' +
+      '<div class="table-type-desc">点击进入</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+function openTableType(type) {
+  currentTableType = type;
+  document.getElementById('table-detail-title').textContent = TABLE_NAMES[type];
+  document.getElementById('table-detail-section').style.display = 'block';
+  document.getElementById('table-search').value = '';
+  renderTableHeader();
+  renderTableRecords();
+}
+
+function renderTableHeader() {
+  var cols = TABLE_COLUMNS[currentTableType];
+  if (!cols) return;
+  var thead = document.getElementById('table-records-thead');
+  thead.innerHTML = '<tr>' + cols.map(function(c) { return '<th>' + c.label + '</th>'; }).join('') + '<th>操作</th></tr>';
+}
+
+function getTableRecords(type) {
+  var t = type || currentTableType;
+  if (!t) return [];
+  var data = localStorage.getItem('yd_table_' + t);
+  return data ? JSON.parse(data) : [];
+}
+
+function saveTableRecords(records, type) {
+  var t = type || currentTableType;
+  if (!t) return;
+  localStorage.setItem('yd_table_' + t, JSON.stringify(records));
+}
+
+function renderTableRecords() {
+  var cols = TABLE_COLUMNS[currentTableType];
+  if (!cols) return;
+  var keyword = (document.getElementById('table-search') || { value: '' }).value.toLowerCase();
+  var all = getTableRecords();
+  
+  // 排序：置顶的在前
+  all = all.sort(function(a, b) {
+    var aPinned = a.pinned ? 1 : 0;
+    var bPinned = b.pinned ? 1 : 0;
+    return bPinned - aPinned;
+  });
+  
+  var filtered = keyword ? all.filter(function(r) {
+    return cols.some(function(c) { return String(r[c.key] || '').toLowerCase().includes(keyword); });
+  }) : all;
+  var tbody = document.getElementById('table-records-body');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="' + (cols.length + 1) + '" class="text-center"><div class="empty-state"><div class="icon">📋</div><p>暂无记录，点击右上角"新增记录"</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(r) {
+    var actions = '';
+    // 产品管理特殊操作：置顶
+    if (currentTableType === 'stock') {
+      var isPinned = r.pinned;
+      actions += '<button class="btn btn-sm btn-ghost" onclick="toggleProductPin(\'' + r.id + '\')" style="color:' + (isPinned ? '#f0b429' : '#888') + ';" title="' + (isPinned ? '取消置顶' : '置顶') + '">' + (isPinned ? '⭐' : '☆') + '</button> ';
+    }
+    actions += '<button class="btn btn-sm btn-ghost" onclick="deleteTableRecord(\'' + r.id + '\')" style="color:#ef5350;">🗑️</button>';
+    return '<tr' + (r.pinned ? ' style="background:rgba(240,180,41,0.08);"' : '') + '>' + cols.map(function(c) {
+      return '<td>' + (r[c.key] || '-') + '</td>';
+    }).join('') + '<td>' + actions + '</td></tr>';
+  }).join('');
+}
+
+function toggleProductPin(id) {
+  var all = getTableRecords();
+  var idx = all.findIndex(function(r) { return r.id === id; });
+  if (idx >= 0) {
+    all[idx].pinned = !all[idx].pinned;
+    saveTableRecords(all);
+    renderTableRecords();
+    toast(all[idx].pinned ? '已置顶' : '已取消置顶', 'info');
+  }
+}
+
+function toggleProductFollow(name, follow) {
+  if (follow) {
+    if (selectedProducts.indexOf(name) === -1) {
+      selectedProducts.push(name);
+    }
+    toast('已添加关注: ' + name, 'success');
+  } else {
+    selectedProducts = selectedProducts.filter(function(p) { return p !== name; });
+    toast('已移除关注: ' + name, 'info');
+  }
+  renderSelectedProducts();
+  refreshPlanProducts();
+}
+
+function filterTableRecords() { renderTableRecords(); }
+
+function openTableRecordModal(id) {
+  var cols = TABLE_COLUMNS[currentTableType];
+  if (!cols) return;
+  document.getElementById('table-record-modal-title').textContent = id ? '编辑记录' : '新增记录';
+  var body = document.getElementById('table-record-modal-body');
+  var rec = id ? getTableRecords().find(function(r) { return r.id === id; }) : null;
+  var html = '<input type="hidden" id="table-record-edit-id" value="' + (id || '') + '">';
+  cols.forEach(function(c) {
+    var val = rec ? (rec[c.key] || '') : '';
+    if (c.type === 'select') {
+      html += '<div class="form-group"><label class="form-label">' + c.label + '</label>' +
+        '<select id="trec_' + c.key + '" class="form-control">' +
+        c.opts.map(function(o) { return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + o + '</option>'; }).join('') +
+        '</select></div>';
+    } else {
+      html += '<div class="form-group"><label class="form-label">' + c.label + '</label>' +
+        '<input type="' + c.type + '" id="trec_' + c.key + '" class="form-control" value="' + val + '"' + (c.type === 'number' ? ' min="0"' : '') + '></div>';
+    }
+  });
+  body.innerHTML = html;
+  document.getElementById('modal-table-record').classList.add('show');
+}
+
+function saveTableRecord() {
+  var cols = TABLE_COLUMNS[currentTableType];
+  if (!cols) return;
+  var id = document.getElementById('table-record-edit-id').value;
+  var rec = { id: id || genId() };
+  cols.forEach(function(c) {
+    var el = document.getElementById('trec_' + c.key);
+    if (el) rec[c.key] = el.value;
+  });
+  var all = getTableRecords();
+  if (id) {
+    var idx = all.findIndex(function(r) { return r.id === id; });
+    if (idx >= 0) all[idx] = rec; else all.unshift(rec);
+  } else {
+    all.unshift(rec);
+  }
+  saveTableRecords(all);
+  closeModal('modal-table-record');
+  renderTableRecords();
+  toast('记录已保存', 'success');
+}
+
+function deleteTableRecord(id) {
+  if (!confirm('确定删除该记录？')) return;
+  var all = getTableRecords();
+  
+  // 如果是产品管理，获取被删除的产品名称
+  if (currentTableType === 'stock') {
+    var deletedRecord = all.find(function(r) { return r.id === id; });
+    if (deletedRecord && deletedRecord.name) {
+      var deletedName = deletedRecord.name;
+      // 从所有客户的关注产品中移除
+      var customers = getCustomers();
+      var updated = false;
+      customers.forEach(function(c) {
+        if (c.products && c.products.indexOf(deletedName) >= 0) {
+          c.products = c.products.filter(function(p) { return p !== deletedName; });
+          updated = true;
+        }
+      });
+      if (updated) {
+        saveCustomers(customers);
+        console.log('已从客户关注产品中移除:', deletedName);
+      }
+    }
+  }
+  
+  all = all.filter(function(r) { return r.id !== id; });
+  saveTableRecords(all);
+  renderTableRecords();
+  toast('记录已删除', 'success');
+}
+
+function deleteAllTableRecords() {
+  var all = getTableRecords();
+  if (!all || all.length === 0) {
+    toast('暂无记录可删除', 'info');
+    return;
+  }
+  if (!confirm('确定删除全部 ' + all.length + ' 条记录？此操作不可撤销！')) return;
+  saveTableRecords([]);
+  renderTableRecords();
+  toast('已删除全部记录', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// Excel 导入导出
+// ═══════════════════════════════════════════════════════
+function exportTableExcel() {
+  var cols = TABLE_COLUMNS[currentTableType];
+  var tableName = TABLE_NAMES[currentTableType] || '数据';
+  if (!cols) return;
+  var all = getTableRecords();
+  
+  if (!all || all.length === 0) {
+    toast('暂无数据可导出', 'info');
+    return;
+  }
+  
+  // 构建表头
+  var header = cols.map(function(c) { return c.label; });
+  // 构建数据
+  var rows = all.map(function(r) {
+    return cols.map(function(c) { return r[c.key] || ''; });
+  });
+  
+  // 使用 SheetJS
+  var ws = XLSX.utils.aoa_to_sheet([header].concat(rows));
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, tableName.replace(/[^\w\u4e00-\u9fa5]/g, ''));
+  XLSX.writeFile(wb, tableName + '_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  toast('Excel 已导出！', 'success');
+}
+
+function handleExcelImport(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, {type: 'array'});
+      var sheetName = workbook.SheetNames[0];
+      var sheet = workbook.Sheets[sheetName];
+      var json = XLSX.utils.sheet_to_json(sheet, {header: 1});
+      
+      if (!json || json.length < 2) {
+        toast('文件为空或格式不正确', 'error');
+        return;
+      }
+      
+      var cols = TABLE_COLUMNS[currentTableType];
+      var header = json[0]; // 第一行是表头
+      var imported = 0;
+      
+      // 映射表头到字段
+      var colMap = {};
+      header.forEach(function(h, idx) {
+        cols.forEach(function(c) {
+          if (h === c.label || h === c.key) {
+            colMap[idx] = c.key;
+          }
+        });
+      });
+      
+      var all = getTableRecords();
+      for (var i = 1; i < json.length; i++) {
+        var row = json[i];
+        var rec = { id: 'imp_' + Date.now() + '_' + i };
+        for (var j = 0; j < row.length; j++) {
+          if (colMap[j]) {
+            rec[colMap[j]] = row[j];
+          }
+        }
+        all.push(rec);
+        imported++;
+      }
+      
+      saveTableRecords(all);
+      renderTableRecords();
+      toast('成功导入 ' + imported + ' 条记录', 'success');
+    } catch(err) {
+      console.error('Excel导入失败:', err);
+      toast('导入失败：' + err.message, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   数据导入导出
+═══════════════════════════════════════════════════════ */
+function exportData() {
+  var data = {
+    customers: getCustomers(),
+    scripts: getScripts(),
+    copies: getCopies(),
+    tables: {},
+    tasks: getTasks(),
+    settings: JSON.parse(localStorage.getItem('yd_settings') || '{}'),
+    version: '1.14',
+    exportTime: new Date().toISOString()
+  };
+  ['stock', 'ledger', 'asset', 'performance', 'custom'].forEach(function(type) {
+    var val = localStorage.getItem('yd_table_' + type);
+    if (val) data.tables[type] = JSON.parse(val);
+  });
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'insurance_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('数据已导出！', 'success');
+}
+
+function importData() {
+  document.getElementById('import-file-input').click();
+}
+
+function handleImport(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (data.customers) localStorage.setItem('yd_customers', JSON.stringify(data.customers));
+      if (data.scripts) localStorage.setItem('yd_scripts', JSON.stringify(data.scripts));
+      if (data.copies) localStorage.setItem('yd_copies', JSON.stringify(data.copies));
+      if (data.tables) {
+        Object.keys(data.tables).forEach(function(type) {
+          localStorage.setItem('yd_table_' + type, JSON.stringify(data.tables[type]));
+        });
+      }
+      initModuleData();
+  initSettings();
+      toast('数据导入成功！', 'success');
+    } catch(err) {
+      toast('导入失败，文件格式错误', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   初始化
+═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  initModuleData();
+  initSettings();
+  // 导航点击事件委托
+  document.querySelector('.sidebar').addEventListener('click', function(e) {
+    var nav = e.target.closest('.nav-item');
+    if (nav) {
+      var id = nav.getAttribute('data-module');
+      if (id) switchModule(id);
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// Dashboard & Settings Functions (v1.3)
+// ═══════════════════════════════════════════════════════════════
+const SETTINGS_KEY = 'yd_settings';
+const BG_PRESETS = ['#f5f5f5', '#e8eaf6', '#e3f2fd', '#fff3e0', '#f1f8e9', '#fce4ec'];
+
+function getSettings() {
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+
+function saveSettingsToStorage(s) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+}
+
+function initSettings() {
+  const s = getSettings();
+  if (s.bgColor) {
+    document.body.style.background = s.bgColor;
+    updateModuleColors(s.bgColor);
+  }
+  if (s.darkMode) document.body.classList.add('dark-mode');
+  if (s.userName) document.getElementById('nav-user') && (document.getElementById('nav-user').textContent = s.userName);
+  renderBgOptions();
+  updateDarkModeButton();
+}
+
+function updateModuleColors(bgColor) {
+  // 根据背景色生成协调的主题色（更深的版本）
+  var primaryColor = darkenColor(bgColor, 0.35);
+  var primaryLight = darkenColor(bgColor, 0.2);
+  
+  document.documentElement.style.setProperty('--primary', primaryColor);
+  document.documentElement.style.setProperty('--primary-light', primaryLight);
+  
+  // 根据背景色亮度决定卡片背景
+  var isDark = isColorDark(bgColor);
+  var darkMode = document.body.classList.contains('dark-mode');
+  if (darkMode) {
+    document.documentElement.style.setProperty('--card-bg', '#1e1e1e');
+    document.documentElement.style.setProperty('--panel-bg', 'rgba(30,30,30,0.92)');
+    document.documentElement.style.setProperty('--bg', '#121212');
+  } else if (isDark) {
+    document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.95)');
+    document.documentElement.style.setProperty('--panel-bg', 'rgba(255,255,255,0.9)');
+  } else {
+    document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.85)');
+    document.documentElement.style.setProperty('--panel-bg', 'rgba(255,255,255,0.75)');
+  }
+}
+
+function darkenColor(hex, amount) {
+  var r = parseInt(hex.slice(1,3), 16);
+  var g = parseInt(hex.slice(3,5), 16);
+  var b = parseInt(hex.slice(5,7), 16);
+  
+  r = Math.round(r * (1 - amount));
+  g = Math.round(g * (1 - amount));
+  b = Math.round(b * (1 - amount));
+  
+  return '#' + [r, g, b].map(function(x) {
+    var hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
+
+function isColorDark(hex) {
+  var r = parseInt(hex.slice(1,3), 16);
+  var g = parseInt(hex.slice(3,5), 16);
+  var b = parseInt(hex.slice(5,7), 16);
+  var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness < 128;
+}
+
+function renderBgOptions() {
+  const container = document.getElementById('bg-options');
+  if (!container) return;
+  const s = getSettings();
+  container.innerHTML = BG_PRESETS.map(c => 
+    '<div class="bg-opt' + (s.bgColor === c ? ' active' : '') + '" style="background:' + c + '" onclick="applyBgPreset(\'' + c + '\')"></div>'
+  ).join('');
+}
+
+function applyBgPreset(color) {
+  document.body.style.background = color;
+  updateModuleColors(color);
+  const s = getSettings();
+  s.bgColor = color;
+  saveSettingsToStorage(s);
+  renderBgOptions();
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  var isDarkNow = document.body.classList.contains('dark-mode');
+  
+  // 清除内联样式，让CSS class规则接管
+  var root = document.documentElement.style;
+  root.removeProperty('--bg');
+  root.removeProperty('--card-bg');
+  root.removeProperty('--panel-bg');
+  root.removeProperty('--text');
+  root.removeProperty('--text-secondary');
+  root.removeProperty('--border');
+  root.removeProperty('--shadow');
+  
+  // 设置正确的背景色并保存设置
+  var s = getSettings();
+  if (isDarkNow) {
+    document.body.style.background = '#121212';
+  } else {
+    document.body.style.background = s.bgColor || '#f5f5f5';
+    // 恢复浅色模式的module颜色
+    if (s.bgColor) updateModuleColors(s.bgColor);
+  }
+  
+  s.darkMode = isDarkNow;
+  saveSettingsToStorage(s);
+  updateDarkModeButton();
+}
+
+function updateDarkModeButton() {
+  const btn = document.getElementById('darkmode-toggle');
+  if (btn) btn.textContent = document.body.classList.contains('dark-mode') ? '☀️ 关闭' : '🌙 开启';
+}
+
+function openSettingsModal() {
+  const s = getSettings();
+  const nameInput = document.getElementById('setting-name');
+  const sigInput = document.getElementById('setting-signature');
+  const styleInput = document.getElementById('setting-ai-style');
+  const extraInput = document.getElementById('setting-ai-extra');
+  if (nameInput) nameInput.value = s.userName || '';
+  if (sigInput) sigInput.value = s.signature || '';
+  if (styleInput) styleInput.value = s.aiStyle || '专业严谨';
+  if (extraInput) extraInput.value = s.aiExtra || '';
+  openModal('modal-settings');
+}
+
+function saveSettings() {
+  const s = getSettings();
+  const nameInput = document.getElementById('setting-name');
+  const sigInput = document.getElementById('setting-signature');
+  const styleInput = document.getElementById('setting-ai-style');
+  const extraInput = document.getElementById('setting-ai-extra');
+  if (nameInput && nameInput.value.trim()) s.userName = nameInput.value.trim();
+  if (sigInput) s.signature = sigInput.value.trim();
+  if (styleInput) s.aiStyle = styleInput.value;
+  if (extraInput) s.aiExtra = extraInput.value.trim();
+  saveSettingsToStorage(s);
+  if (s.userName && document.getElementById('nav-user')) {
+    document.getElementById('nav-user').textContent = s.userName;
+  }
+  closeModal('modal-settings');
+  toast('设置已保存', 'success');
+}
+
+function switchModule(id) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const mod = document.getElementById(id);
+  const nav = document.querySelector('[data-module="' + id + '"]');
+  if (mod) mod.classList.add('active');
+  if (nav) nav.classList.add('active');
+    const titles = {'module-dashboard': '📊 数据看板', 'module-plan': '📋 方案生成', 'module-scripts': '💬 话术文案', 'module-customers': '👥 客户管理', 'module-tables': '📊 表格登记', 'module-ai': '🤖 AI 助手'};
+  document.getElementById('topbar-title').textContent = titles[id] || '赢单';
+  document.getElementById('topbar-title').style.color = 'var(--primary-dark)';
+  setTimeout(function() { document.getElementById('topbar-title').style.color = ''; }, 600);
+  if (id === 'module-dashboard') renderDashboard();
+  if (id === 'module-plan') { refreshPlanCustomerSelect(); refreshPlanProducts(); }
+}
+
+function renderDashboard() {
+  const customers = getCustomers();
+  const now = new Date();
+  const hour = now.getHours();
+  let greeting = '早上好';
+  if (hour >= 12 && hour < 18) greeting = '下午好';
+  else if (hour >= 18) greeting = '晚上好';
+  const greetEl = document.getElementById('dash-greeting');
+  if (greetEl) greetEl.textContent = greeting + '，欢迎回来 👋';
+  
+  const timeEl = document.getElementById('dash-time');
+  if (timeEl) timeEl.textContent = now.toLocaleString('zh-CN', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+  
+  // Stats
+  const statsEl = document.getElementById('dash-stats');
+  if (statsEl) {
+    const total = customers.length;
+    const following = customers.filter(c => c.status === '跟进中').length;
+    const highIntent = customers.filter(c => c.status === '高意向').length;
+    const signed = customers.filter(c => c.status === '已签单').length;
+    statsEl.innerHTML = 
+      '<div class="stat-card"><div class="num">' + total + '</div><div class="label">客户总数</div></div>' +
+      '<div class="stat-card"><div class="num">' + following + '</div><div class="label">跟进中</div></div>' +
+      '<div class="stat-card"><div class="num">' + highIntent + '</div><div class="label">高意向</div></div>' +
+      '<div class="stat-card"><div class="num">' + signed + '</div><div class="label">已签单</div></div>';
+  }
+  
+  // 初始化曲线日期选择器
+  var today = new Date();
+  var thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+  var startInput = document.getElementById('curve-start-date');
+  var endInput = document.getElementById('curve-end-date');
+  if (startInput) startInput.value = thirtyDaysAgo.toISOString().slice(0, 10);
+  if (endInput) endInput.value = today.toISOString().slice(0, 10);
+  renderCustomerCurve();
+  
+  // Overdue
+  const overdue = customers.filter(c => {
+    if (!c.nextFollow) return false;
+    return new Date(c.nextFollow) < new Date();
+  });
+  const overdueEl = document.getElementById('overdue-list');
+  const countEl = document.getElementById('overdue-count');
+  if (countEl) countEl.textContent = overdue.length > 0 ? '(' + overdue.length + '条)' : '';
+  if (overdueEl) {
+    overdueEl.innerHTML = overdue.slice(0, 5).map(c => 
+      '<div class="overdue-item"><span class="overdue-name">' + (c.name || '未知') + '</span><span class="overdue-date">' + (c.nextFollow || '-') + '</span></div>'
+    ).join('') || '<div style="color:var(--text-secondary);font-size:12px;">暂无待跟进</div>';
+  }
+}
+
+function renderPipelineChart(customers) {
+  const container = document.getElementById('pipeline-chart');
+  if (!container) return;
+  const stages = ['跟进中', '高意向', '已签单'];
+  const counts = stages.map(s => customers.filter(c => c.status === s).length);
+  const max = Math.max(...counts, 1);
+  container.innerHTML = stages.map((s, i) => 
+    '<div style="text-align:center;"><div class="pipeline-bar" style="height:' + Math.max(counts[i] / max * 80, 8) + 'px" data-count="' + counts[i] + '"></div><div class="pipeline-label">' + s + '</div></div>'
+  ).join('');
+}
+
+// 客户变化曲线
+function renderCustomerCurve() {
+  var canvas = document.getElementById('curve-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var startDate = document.getElementById('curve-start-date').value;
+  var endDate = document.getElementById('curve-end-date').value;
+  
+  if (!startDate || !endDate) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#999';
+    ctx.textAlign = 'center';
+    ctx.fillText('请选择起始日期和终止日期', canvas.width/2, canvas.height/2);
+    return;
+  }
+  
+  var start = new Date(startDate);
+  var end = new Date(endDate);
+  if (start > end) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#ef5350';
+    ctx.textAlign = 'center';
+    ctx.fillText('起始日期不能晚于终止日期', canvas.width/2, canvas.height/2);
+    return;
+  }
+  
+  // 生成日期范围内的所有日期
+  var dates = [];
+  var current = new Date(start);
+  while (current <= end) {
+    dates.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+  
+  // 模拟数据：每天新增客户数量（实际应根据lastFollow等计算）
+  var customers = getCustomers();
+  var data = dates.map(function(d) {
+    var dateStr = d.toISOString().slice(0, 10);
+    // 简单计算：该日期之后创建的客户算作新增（这里用随机模拟演示）
+    var count = Math.floor(Math.random() * 5); // 模拟数据
+    return count;
+  });
+  
+  // 实际：统计每天的跟进记录数量
+  dates.forEach(function(d, i) {
+    var dateStr = d.toISOString().slice(0, 10);
+    var dayRecords = customers.filter(function(c) {
+      if (!c.lastFollow) return false;
+      return c.lastFollow.startsWith(dateStr);
+    }).length;
+    data[i] = dayRecords + Math.floor(Math.random() * 3);
+  });
+  
+  // 绘制曲线
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  var w = canvas.width;
+  var h = canvas.height;
+  var padding = 40;
+  
+  ctx.clearRect(0, 0, w, h);
+  
+  // 坐标轴
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, h - padding);
+  ctx.lineTo(w - padding, h - padding);
+  ctx.stroke();
+  
+  // 找最大值
+  var maxVal = Math.max(...data, 1);
+  var stepX = (w - padding * 2) / (dates.length - 1 || 1);
+  
+  // 绘制圆润曲线
+  ctx.strokeStyle = '#4a9eff';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  
+  if (data.length > 0) {
+    // 使用贝塞尔曲线绘制
+    for (var i = 0; i < data.length; i++) {
+      var x = padding + i * stepX;
+      var y = h - padding - (data[i] / maxVal) * (h - padding * 2);
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        var prevX = padding + (i - 1) * stepX;
+        var prevY = h - padding - (data[i - 1] / maxVal) * (h - padding * 2);
+        var cpX = (prevX + x) / 2;
+        ctx.quadraticCurveTo(cpX, prevY, cpX, (prevY + y) / 2);
+        ctx.quadraticCurveTo(cpX, y, x, y);
+      }
+    }
+  }
+  ctx.stroke();
+  
+  // 绘制填充区域（圆润）
+  ctx.fillStyle = 'rgba(74, 158, 255, 0.15)';
+  ctx.beginPath();
+  ctx.moveTo(padding, h - padding);
+  for (var i = 0; i < data.length; i++) {
+    var x = padding + i * stepX;
+    var y = h - padding - (data[i] / maxVal) * (h - padding * 2);
+    if (i === 0) {
+      ctx.lineTo(x, y);
+    } else {
+      var prevX = padding + (i - 1) * stepX;
+      var prevY = h - padding - (data[i - 1] / maxVal) * (h - padding * 2);
+      var cpX = (prevX + x) / 2;
+      ctx.quadraticCurveTo(cpX, prevY, cpX, (prevY + y) / 2);
+      ctx.quadraticCurveTo(cpX, y, x, y);
+    }
+  }
+  ctx.lineTo(padding + (data.length - 1) * stepX, h - padding);
+  ctx.closePath();
+  ctx.fill();
+  
+  // 绘制圆润的点
+  ctx.fillStyle = '#fff';
+  ctx.strokeStyle = '#4a9eff';
+  ctx.lineWidth = 2;
+  data.forEach(function(val, i) {
+    var x = padding + i * stepX;
+    var y = h - padding - (val / maxVal) * (h - padding * 2);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+  
+  // 绘制Y轴标签
+  ctx.fillStyle = '#666';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  for (var i = 0; i <= 4; i++) {
+    var val = Math.round(maxVal * i / 4);
+    var y = h - padding - (val / maxVal) * (h - padding * 2);
+    ctx.fillText(val.toString(), padding - 5, y + 3);
+  }
+  
+  // 绘制X轴标签
+  ctx.textAlign = 'center';
+  var labelStep = Math.ceil(dates.length / 6);
+  dates.forEach(function(d, i) {
+    if (i % labelStep === 0 || i === dates.length - 1) {
+      var x = padding + i * stepX;
+      var label = (d.getMonth() + 1) + '/' + d.getDate();
+      ctx.fillText(label, x, h - padding + 15);
+    }
+  });
+}
+
+
+
+
+/* ═══════════════════════════════════════════════════════
+   任务管理
+═══════════════════════════════════════════════════════ */
+function getTasks() {
+  try {
+    return JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveTasks(tasks) {
+  localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+}
+
+function renderTasks() {
+  var container = document.getElementById('task-list');
+  if (!container) return;
+  
+  var tasks = getTasks();
+  
+  // 排序：置顶优先，然后按截止时间
+  tasks.sort(function(a, b) {
+    if (a.pinned !== b.pinned) return b.pinned ? 1 : -1;
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+  
+  // 只显示未完成的任务
+  var activeTasks = tasks.filter(function(t) { return !t.completed; });
+  
+  if (activeTasks.length === 0) {
+    container.innerHTML = '<div class="task-empty">暂无待办任务<br><button class="btn btn-sm" style="margin-top:8px;" onclick="openTaskModal()">+ 添加任务</button></div>';
+    return;
+  }
+  
+  var html = activeTasks.map(function(task) {
+    var countdown = formatCountdown(task.deadline);
+    return '<div class="task-card ' + (task.pinned ? 'pinned' : '') + ' ' + countdown.status + '" onclick="openTaskDetail(\'' + task.id + '\')">' +
+      '<div class="task-card-header">' +
+        '<div class="task-card-title">' + (task.pinned ? '📌 ' : '') + task.title + '</div>' +
+        '<div class="task-card-countdown ' + countdown.status + '">' + countdown.text + '</div>' +
+      '</div>' +
+      '<div class="task-card-deadline" style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<span>截止: ' + formatDeadline(task.deadline) + '</span>' +
+        '<button class="btn btn-sm" onclick="event.stopPropagation();deleteTask(\'' + task.id + '\')" style="color:#ef5350;padding:2px 6px;">🗑️ 删除</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  
+  container.innerHTML = html;
+}
+
+function formatCountdown(deadline) {
+  var now = new Date();
+  var end = new Date(deadline);
+  var diff = end - now;
+  
+  if (diff < 0) {
+    return { text: '已过期', status: 'urgent' };
+  }
+  
+  var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (days > 0) {
+    return { text: days + '天' + hours + '时', status: 'soon' };
+  }
+  if (hours > 0) {
+    return { text: hours + '时' + minutes + '分', status: 'warning' };
+  }
+  return { text: minutes + '分钟', status: 'urgent' };
+}
+
+function formatDeadline(deadline) {
+  var d = new Date(deadline);
+  var month = d.getMonth() + 1;
+  var day = d.getDate();
+  var hour = d.getHours();
+  var min = d.getMinutes();
+  return month + '/' + day + ' ' + hour + ':' + String(min).padStart(2, '0');
+}
+
+var currentEditTaskId = null;
+
+function openTaskModal(taskId) {
+  currentEditTaskId = taskId || null;
+  var modal = document.getElementById('modal-task');
+  var titleEl = document.getElementById('task-modal-title');
+  var titleInput = document.getElementById('task-title');
+  var deadlineInput = document.getElementById('task-deadline');
+  var detailInput = document.getElementById('task-detail');
+  var pinnedInput = document.getElementById('task-pinned');
+  var saveBtn = document.getElementById('task-save-btn');
+  
+  if (currentEditTaskId) {
+    var tasks = getTasks();
+    var task = tasks.find(function(t) { return t.id === currentEditTaskId; });
+    if (task) {
+      titleEl.textContent = '编辑任务';
+      titleInput.value = task.title;
+      deadlineInput.value = task.deadline;
+      detailInput.value = task.detail || '';
+      pinnedInput.checked = task.pinned;
+      saveBtn.textContent = '更新';
+    }
+  } else {
+    titleEl.textContent = '新增任务';
+    titleInput.value = '';
+    deadlineInput.value = '';
+    detailInput.value = '';
+    pinnedInput.checked = false;
+    saveBtn.textContent = '保存';
+  }
+  
+  openModal('modal-task');
+}
+
+function saveTask() {
+  var titleInput = document.getElementById('task-title');
+  var deadlineInput = document.getElementById('task-deadline');
+  var detailInput = document.getElementById('task-detail');
+  var pinnedInput = document.getElementById('task-pinned');
+  
+  var title = titleInput.value.trim();
+  var deadline = deadlineInput.value;
+  var detail = detailInput.value.trim();
+  var pinned = pinnedInput.checked;
+  
+  if (!title) {
+    toast('请输入任务标题', 'warning');
+    return;
+  }
+  if (!deadline) {
+    toast('请选择截止时间', 'warning');
+    return;
+  }
+  
+  var tasks = getTasks();
+  
+  if (currentEditTaskId) {
+    var idx = tasks.findIndex(function(t) { return t.id === currentEditTaskId; });
+    if (idx >= 0) {
+      tasks[idx].title = title;
+      tasks[idx].deadline = deadline;
+      tasks[idx].detail = detail;
+      tasks[idx].pinned = pinned;
+    }
+  } else {
+    tasks.push({
+      id: genId(),
+      title: title,
+      deadline: deadline,
+      detail: detail,
+      pinned: pinned,
+      completed: false,
+      createdAt: new Date().toISOString()
+    });
+  }
+  
+  saveTasks(tasks);
+  closeModal('modal-task');
+  renderTasks();
+  toast(currentEditTaskId ? '任务已更新' : '任务已添加', 'success');
+}
+
+function openTaskDetail(taskId) {
+  var tasks = getTasks();
+  var task = tasks.find(function(t) { return t.id === taskId; });
+  if (!task) return;
+  
+  var titleEl = document.getElementById('task-detail-title');
+  var contentEl = document.getElementById('task-detail-content');
+  var editBtn = document.getElementById('task-detail-edit-btn');
+  var completeBtn = document.getElementById('task-detail-complete-btn');
+  
+  titleEl.textContent = task.title;
+  
+  var countdown = formatCountdown(task.deadline);
+  var html = '<div style="margin-bottom:16px;">' +
+    '<div style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:8px;">' + countdown.text + '</div>' +
+    '<div style="font-size:13px;color:var(--text-secondary);">截止时间: ' + formatDeadline(task.deadline) + '</div>' +
+  '</div>';
+  
+  if (task.detail) {
+    html += '<div style="background:#f5f5f5;padding:12px;border-radius:6px;font-size:13px;line-height:1.6;white-space:pre-wrap;">' + task.detail + '</div>';
+  }
+  
+  html += '<div style="margin-top:12px;font-size:11px;color:var(--text-secondary);">' +
+    (task.pinned ? '📌 已置顶 · ' : '') +
+    '创建于 ' + new Date(task.createdAt).toLocaleDateString() +
+  '</div>';
+  
+  contentEl.innerHTML = html;
+  
+  editBtn.onclick = function() {
+    closeModal('modal-task-detail');
+    openTaskModal(taskId);
+  };
+  
+  completeBtn.onclick = function() {
+    completeTask(taskId);
+  };
+  
+  openModal('modal-task-detail');
+}
+
+function completeTask(taskId) {
+  var tasks = getTasks();
+  var idx = tasks.findIndex(function(t) { return t.id === taskId; });
+  if (idx >= 0) {
+    tasks[idx].completed = true;
+    tasks[idx].completedAt = new Date().toISOString();
+    saveTasks(tasks);
+    closeModal('modal-task-detail');
+    renderTasks();
+    toast('任务已完成！', 'success');
+  }
+}
+
+function deleteTask(taskId) {
+  if (!confirm('确定删除此任务？')) return;
+  var tasks = getTasks();
+  tasks = tasks.filter(function(t) { return t.id !== taskId; });
+  saveTasks(tasks);
+  renderTasks();
+  toast('任务已删除', 'info');
+}
+
+function togglePin(taskId) {
+  var tasks = getTasks();
+  var idx = tasks.findIndex(function(t) { return t.id === taskId; });
+  if (idx >= 0) {
+    tasks[idx].pinned = !tasks[idx].pinned;
+    saveTasks(tasks);
+    renderTasks();
+    toast(tasks[idx].pinned ? '已置顶' : '已取消置顶', 'info');
+  }
+}
+
+// 定时刷新倒计时
+setInterval(function() {
+  renderTasks();
+}, 60000);
+
+
+
+// ═══════════════════════════════════════════════════════════
+// AI 助手功能模块
+// ═══════════════════════════════════════════════════════════
+
+var AI_CONFIG = {
+  url: localStorage.getItem('ai_api_url') || 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+  key: localStorage.getItem('ai_api_key') || '40a4eb50-4144-449c-8a0d-27590b19f089',
+  model: localStorage.getItem('ai_model') || 'ep-20260415205954-ffj9g',
+  systemPrompt: localStorage.getItem('ai_system_prompt') || '你是一位专业、经验丰富的保险销售顾问，精通各类保险产品。你的职责是：1)根据客户信息提供个性化保险方案建议；2)解答客户关于保险产品、保障范围、理赔等问题；3)提供专业的销售话术和沟通技巧。请用专业、亲切、易懂的语言回答。'
+};
+
+function getAIConfig() {
+  return AI_CONFIG;
+}
+
+function saveAISettings() {
+  AI_CONFIG.url = document.getElementById('ai-api-url').value || AI_CONFIG.url;
+  AI_CONFIG.key = document.getElementById('ai-api-key').value || AI_CONFIG.key;
+  AI_CONFIG.model = document.getElementById('ai-model').value || AI_CONFIG.model;
+  AI_CONFIG.systemPrompt = document.getElementById('ai-system-prompt').value || AI_CONFIG.systemPrompt;
+  
+  localStorage.setItem('ai_api_url', AI_CONFIG.url);
+  localStorage.setItem('ai_api_key', AI_CONFIG.key);
+  localStorage.setItem('ai_model', AI_CONFIG.model);
+  localStorage.setItem('ai_system_prompt', AI_CONFIG.systemPrompt);
+  
+  closeModal('modal-ai-settings');
+  toast('AI 设置已保存', 'success');
+}
+
+function openAISettings() {
+  document.getElementById('ai-api-url').value = AI_CONFIG.url;
+  document.getElementById('ai-api-key').value = AI_CONFIG.key;
+  document.getElementById('ai-model').value = AI_CONFIG.model;
+  document.getElementById('ai-system-prompt').value = AI_CONFIG.systemPrompt;
+  openModal('modal-ai-settings');
+}
+
+var AIMessageHistory = [];  // 全局消息历史
+var currentStreamingDiv = null;  // 当前流式输出div引用
+
+function addAIMessage(role, content) {
+  AIMessageHistory.push({ role: role, content: content });
+  var container = document.getElementById('ai-messages');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'ai-message ' + (role === 'user' ? 'ai-user' : 'ai-assistant');
+  div.innerHTML = '<div class="ai-message-content">' + content + '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function aiInputKeydown(e) { if (e.key === 'Enter') { e.preventDefault(); sendAIMessage(); } }
+
+function sendAIMessage() {
+  var input = document.getElementById('ai-input');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) return;
+  
+  if (!AI_CONFIG.key || !AI_CONFIG.model) {
+    addAIMessage('assistant', '⚠️ 请先在设置中配置 API Key 和接入点 ID。');
+    return;
+  }
+  
+  // 获取上下文信息
+  var industry = getCurrentIndustry();
+  var settings = getSettings();
+  var aiStyle = settings.aiStyle || '专业严谨';
+  var aiExtra = settings.aiExtra || '';
+  var customerId = document.getElementById('plan-customer') ? document.getElementById('plan-customer').value : '';
+  var customerName = document.getElementById('plan-name') ? document.getElementById('plan-name').value.trim() : '';
+  var customerJob = document.getElementById('plan-job') ? document.getElementById('plan-job').value.trim() : '';
+  var customerIncome = document.getElementById('plan-income') ? document.getElementById('plan-income').value.trim() : '';
+  var customerAge = document.getElementById('plan-age') ? document.getElementById('plan-age').value.trim() : '';
+  var selectedProducts = window.selectedProducts || [];
+  
+  // 构建上下文提示
+  var contextInfo = '【身份与风格】\n';
+  contextInfo += '你的沟通风格：' + aiStyle + '\n';
+  if (aiExtra) contextInfo += '附加要求：' + aiExtra + '\n';
+  contextInfo += '\n【当前场景】\n';
+  contextInfo += '从事行业：' + industry + '\n';
+  if (customerName) contextInfo += '当前客户姓名：' + customerName + '\n';
+  if (customerJob) contextInfo += '客户职业：' + customerJob + '\n';
+  if (customerAge) contextInfo += '客户年龄：' + customerAge + '岁\n';
+  if (customerIncome) contextInfo += '客户年收入：' + customerIncome + '万元\n';
+  if (selectedProducts.length > 0) contextInfo += '客户关注产品：' + selectedProducts.join('、') + '\n';
+  contextInfo += '\n请根据以上信息回答用户问题，可结合客户画像和当前上下文进行补充润色。\n';
+  
+  addAIMessage('user', msg);
+  AIMessageHistory.push({ role: 'user', content: msg });
+  input.value = '';
+  
+  // 流式输出 - 保存全局引用，切换页面不中断
+  var msgDiv = document.createElement('div');
+  msgDiv.className = 'ai-message ai-assistant';
+  var contentDiv = document.createElement('div');
+  contentDiv.className = 'ai-message-content';
+  contentDiv.innerHTML = '<div class="ai-thinking"><div class="ai-coin">🪙</div><span>思考中...</span></div>';
+  msgDiv.appendChild(contentDiv);
+  var container = document.getElementById('ai-messages');
+  container.appendChild(msgDiv);
+  container.scrollTop = container.scrollHeight;
+  
+  // 保存到全局，切换页面后可恢复
+  currentStreamingDiv = { div: msgDiv, content: contentDiv };
+  
+  fetch(AI_CONFIG.url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + AI_CONFIG.key
+    },
+    body: JSON.stringify({
+      model: AI_CONFIG.model,
+      messages: [
+        {role: 'system', content: AI_CONFIG.systemPrompt + '\n\n' + contextInfo},
+        {role: 'user', content: msg}
+      ],
+      stream: true,
+      temperature: 0.7,
+      max_tokens: 2048
+    })
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      return res.text().then(function(text) {
+        throw new Error('HTTP ' + res.status + ': ' + text);
+      });
+    }
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var hasContent = false;  // 标记是否已收到第一个字符
+    
+    function processChunk() {
+      reader.read().then(function(result) {
+        if (result.done) {
+          if (buffer) {
+            try {
+              var lines = buffer.split('\n');
+              lines.forEach(function(line) {
+                if (line.startsWith('data: ')) {
+                  var jsonStr = line.slice(6);
+                  if (jsonStr === '[DONE]') return;
+                  var data = JSON.parse(jsonStr);
+                  if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                    var chunk = data.choices[0].delta.content;
+                    var cd = currentStreamingDiv;
+                    if (cd) {
+                      if (!hasContent) { cd.content.innerHTML = ''; hasContent = true; }
+                      cd.content.textContent += chunk;
+                      var c = document.getElementById('ai-messages');
+                      if (c) c.scrollTop = c.scrollHeight;
+                    }
+                  }
+                }
+              });
+            } catch(e) {}
+          }
+          // 流式结束，保存到历史
+          if (hasContent && currentStreamingDiv) {
+            var finalContent = currentStreamingDiv.content.textContent;
+            AIMessageHistory.push({ role: 'assistant', content: finalContent });
+            currentStreamingDiv = null;
+          }
+          return;
+        }
+        buffer += decoder.decode(result.value, {stream: true});
+        var lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        lines.forEach(function(line) {
+          if (line.startsWith('data: ')) {
+            var jsonStr = line.slice(6);
+            if (jsonStr === '[DONE]') return;
+            try {
+              var data = JSON.parse(jsonStr);
+              if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                var chunk = data.choices[0].delta.content;
+                var cd = currentStreamingDiv;
+                if (cd) {
+                  if (!hasContent) { cd.content.innerHTML = ''; hasContent = true; }
+                  cd.content.textContent += chunk;
+                  var c = document.getElementById('ai-messages');
+                  if (c) c.scrollTop = c.scrollHeight;
+                }
+              }
+            } catch(e) {}
+          }
+        });
+        processChunk();
+      });
+    }
+    processChunk();
+  })
+  .catch(function(err) {
+    contentDiv.textContent = '❌ 请求失败: ' + err.message;
+    contentDiv.style.color = '#ef5350';
+  });
+}
+
+function quickAI(prompt) {
+  var input = document.getElementById('ai-input');
+  if (input) {
+    input.value = prompt;
+    sendAIMessage();
+  }
+}
+
+// 初始化 AI 模块
+function initAIModule() {
+  var container = document.getElementById('ai-messages');
+  if (!container) return;
+  container.innerHTML = '';
+  if (AIMessageHistory.length === 0) {
+    addAIMessage('assistant', '👋 你好！我是赢单AI助手，可以帮你生成工作计划，分析客户，推荐产品，撰写话术等。有什么我可以帮你的？');
+  } else {
+    AIMessageHistory.forEach(function(m) {
+      addAIMessage(m.role, m.content);
+    });
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+// 在 switchModule 中初始化 AI
+var originalSwitchModule = switchModule;
+switchModule = function(id) {
+  originalSwitchModule(id);
+  if (id === 'module-ai') {
+    initAIModule();
+  }
+};
+
+console.log('✓ AI 功能模块已加载');
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
